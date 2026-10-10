@@ -51,6 +51,9 @@ export default function (eleventyConfig) {
   eleventyConfig.addWatchTarget("./content/");
   eleventyConfig.addWatchTarget("./brand/");
   eleventyConfig.addWatchTarget("./site/lib/");
+  // Wait for a burst of saves to settle before rebuilding, so a multi-file edit
+  // is not built half-way (a missed site/lib change leaves the preview stale).
+  eleventyConfig.setWatchThrottleWaitTime(300);
 
   return {
     dir: {
