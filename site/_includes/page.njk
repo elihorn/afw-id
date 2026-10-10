@@ -1,75 +1,79 @@
-{%- set crumbs = collections.navTree | trail(page.url) -%}
-{%- set current = crumbs | last -%}
+{%- set crumbs = collections.navTree|trail(page.url) -%}
+{%- set current = crumbs|last -%}
 {%- set pageTitle = title or (current.label if current else site.title) -%}
 {%- set isHome = page.url == "/" -%}
-{%- set nav = collections.navTree | pager(page.url) -%}
+{%- set nav = collections.navTree|pager(page.url) -%}
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% if not isHome %}{{ pageTitle }} · {% endif %}{{ site.title }} {{ site.subtitle }}</title>
-  {% if description %}<meta name="description" content="{{ description }}">{% endif %}
-  <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
-  <link rel="stylesheet" href="/assets/theme.css">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if not isHome %}{{ pageTitle }} · {% endif %}{{ site.title }} {{ site.subtitle }}</title>
+    {% if description %}<meta name="description" content="{{ description }}">{% endif %}
+    <script>
+      try {
+        var t = localStorage.getItem("theme");
+        if (t) document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+    <link rel="stylesheet" href="/assets/theme.css">
   {% brandCss %}
-  <script src="/assets/site.js" defer></script>
-</head>
-<body>
-  <aside class="sidebar" id="sidebar">
-    <div class="sidebar__head">
-      <a class="pill pill--strong" href="/">{{ site.title }}</a>
-      <span class="sidebar__sub">{{ site.subtitle }} {{ site.version }}</span>
-    </div>
-    <nav class="nav" aria-label="Sections">
-      {{ collections.navTree | navHtml(page.url) | safe }}
-    </nav>
-    <div class="sidebar__foot">
-      <a class="pill" href="{{ site.studio.url }}" target="_blank" rel="noopener">{{ site.studio.name }}</a>
-      <button class="pill" type="button" data-theme-toggle aria-label="Toggle light and dark">Light / Dark</button>
-    </div>
-  </aside>
-
-  <button class="menu-toggle" type="button" data-menu-toggle aria-controls="sidebar" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
-
-  <div class="main">
-    {% if not isHome %}
-    <header class="topbar">
-      <nav class="crumbs" aria-label="Breadcrumb">
-        <a href="/">{{ site.title }}</a>
-        {%- for c in crumbs %}
-        <span class="crumbs__sep">/</span>
-        {% if c.url and not loop.last %}<a href="{{ c.url }}">{{ c.label }}</a>{% else %}<span>{{ c.label }}</span>{% endif %}
-        {%- endfor %}
+    <script src="/assets/site.js" defer></script>
+  </head>
+  <body>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__head">
+        <a class="pill pill--strong" href="/">{{ site.title }}</a>
+        <span class="sidebar__sub">{{ site.subtitle }} {{ site.version }}</span>
+      </div>
+      <nav class="nav" aria-label="Sections">
+        {{ collections.navTree|navHtml(page.url)|safe }}
       </nav>
-    </header>
-    {% endif %}
+      <div class="sidebar__foot">
+        <button class="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Dark theme" title="Dark theme" data-theme-toggle></button>
+      </div>
+    </aside>
 
-    <main class="content">
-      {% if not isHome or title %}<h1 class="page-title">{{ pageTitle }}</h1>{% endif %}
-      {{ content | safe }}
-    </main>
+    <button class="menu-toggle" type="button" data-menu-toggle aria-controls="sidebar" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
 
-    {% if nav.prev or nav.next %}
-    <nav class="pager" aria-label="Previous and next">
-      {% if nav.prev %}<a class="pager__prev" href="{{ nav.prev.url }}"><span>Previous</span>{{ nav.prev.label }}</a>{% else %}<span></span>{% endif %}
-      {% if nav.next %}<a class="pager__next" href="{{ nav.next.url }}"><span>Next</span>{{ nav.next.label }}</a>{% endif %}
-    </nav>
-    {% endif %}
-  </div>
+    <div class="main">
+      {% if not isHome %}
+        <header class="topbar">
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="/">{{ site.title }}</a>
+            {%- for c in crumbs %}
+              <span class="crumbs__sep">/</span>
+              {% if c.url and not loop.last %}<a href="{{ c.url }}">{{ c.label }}</a>{% else %}<span>{{ c.label }}</span>{% endif %}
+            {%- endfor %}
+          </nav>
+        </header>
+      {% endif %}
 
-  <dialog class="lightbox" aria-label="Image viewer">
-    <img alt="">
-    <div class="lightbox__bar">
-      <span class="lightbox__caption"></span>
-      <span>
-        <button class="pill" type="button" data-prev aria-label="Previous">&larr;</button>
-        <button class="pill" type="button" data-next aria-label="Next">&rarr;</button>
-        <button class="pill" type="button" data-close aria-label="Close">Close</button>
-      </span>
+      <main class="content">
+        {% if not isHome or title %}<h1 class="page-title">{{ pageTitle }}</h1>{% endif %}
+        {{ content|safe }}
+      </main>
+
+      {% if nav.prev or nav.next %}
+        <nav class="pager" aria-label="Previous and next">
+          {% if nav.prev %}<a class="pager__prev" href="{{ nav.prev.url }}"><span>Previous</span>{{ nav.prev.label }}</a>{% else %}<span></span>{% endif %}
+          {% if nav.next %}<a class="pager__next" href="{{ nav.next.url }}"><span>Next</span>{{ nav.next.label }}</a>{% endif %}
+        </nav>
+      {% endif %}
     </div>
-  </dialog>
-</body>
+
+    <dialog class="lightbox" aria-label="Image viewer">
+      <img alt="">
+      <div class="lightbox__bar">
+        <span class="lightbox__caption"></span>
+        <span>
+          <button class="pill" type="button" data-prev aria-label="Previous">&larr;</button>
+          <button class="pill" type="button" data-next aria-label="Next">&rarr;</button>
+          <button class="pill" type="button" data-close aria-label="Close">Close</button>
+        </span>
+      </div>
+    </dialog>
+  </body>
 </html>

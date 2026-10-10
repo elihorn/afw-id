@@ -3,14 +3,22 @@ document.querySelector("[data-menu-toggle]")?.addEventListener("click", () => {
   document.body.classList.toggle("menu-open");
 });
 
-// Light / dark toggle (remembered per browser)
-document.querySelector("[data-theme-toggle]")?.addEventListener("click", () => {
+// Light / dark switch (remembered per browser). The knob position is CSS; this keeps aria-checked in step.
+(() => {
+  const toggle = document.querySelector("[data-theme-toggle]");
+  if (!toggle) return;
   const root = document.documentElement;
-  const current = root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-  const next = current === "dark" ? "light" : "dark";
-  root.dataset.theme = next;
-  try { localStorage.setItem("theme", next); } catch (e) {}
-});
+  const current = () => root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  const sync = () => toggle.setAttribute("aria-checked", String(current() === "dark"));
+  sync();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", sync);
+  toggle.addEventListener("click", () => {
+    const next = current() === "dark" ? "light" : "dark";
+    root.dataset.theme = next;
+    try { localStorage.setItem("theme", next); } catch (e) {}
+    sync();
+  });
+})();
 
 // Section links: list this page's h2 headings under its sidebar link
 (() => {
