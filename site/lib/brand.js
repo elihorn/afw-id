@@ -1,24 +1,24 @@
-// Components driven by brand/tokens.json. Edit the tokens and these update.
+// Components driven by brand/brand.json, the portable core brand definition.
+// Edit brand.json and everything here follows.
 //
-//   {% brandCss %}                         (in the layout) colour + type variables, @font-face
+//   {% brandCss %}                         (in the layout) colour + type variables, @font-face, .ts-* classes
 //   {% palette "primary" %}                large colour plates for one group
 //   {% fontSpecimen %}                     brand font specimen
-//   {% typeStyle "h1-print" %}text{% endtypeStyle %}   style specimen with leading guides + specs
+//   {% typeStyle "h1" %}text{% endtypeStyle %}   style specimen with baseline guides + specs
 //
-// Every type style in the tokens also becomes a CSS class: .ts-h1-print, .ts-p1-print, ...
-// so one-off layouts can be written in HTML and still follow the tokens.
+// Line height and paragraph space are brand-wide values (type.leading, type.paragraphSpacing),
+// not per style: every style inherits them, in em, so they scale with the type size.
+// Every style also becomes a CSS class (.ts-h1, .ts-p1, ...) for one-off layouts written in HTML.
 
 import fs from "node:fs";
 import path from "node:path";
 
-const TOKENS = path.resolve("brand/tokens.json");
+const BRAND = path.resolve("brand/brand.json");
 
-export const tokens = () => JSON.parse(fs.readFileSync(TOKENS, "utf8"));
+export const brand = () => JSON.parse(fs.readFileSync(BRAND, "utf8"));
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-const num = (v) => parseFloat(v) || 0;
-const hexOf = (t) => (t.hex || t.value?.light || Object.values(t.value || {})[0] || "").toUpperCase();
 
 function split(args) {
   const last = args[args.length - 1];
@@ -29,37 +29,61 @@ function split(args) {
   return { pos: args, opts: {} };
 }
 
-function allStyles(t) {
-  const out = [];
-  for (const g of t.type?.groups || []) {
-    for (const s of g.styles || []) out.push({ ...s, group: g });
-  }
-  return out;
+const problem = (msg) => `<p class="component-error">${esc(msg)}</p>`;
+
+// --------------------------------------------------------------------------
+// Reading the brand values
+// --------------------------------------------------------------------------
+
+const GENERIC = /^(serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-[a-z-]+)$/;
+const stack = (list) => (Array.isArray(list) ? list : [list]).map((f) => (GENERIC.test(f) ? f : `"${f}"`)).join(", ");
+
+const CASE = { upper: "uppercase", lower: "lowercase", sentence: "none", none: "none" };
+
+// paragraphSpacing: "0.5lh" = half the line height, "0.6em", or a plain number of em
+function paraFactor(t) {
+  const v = String(t.paragraphSpacing ?? "0.5lh").trim();
+  if (v.endsWith("lh")) return { lh: parseFloat(v) };
+  return { em: parseFloat(v) };
 }
 
-function findStyle(t, name) {
-  return allStyles(t).find((s) => s.name === name);
+function paraCss(t) {
+  const p = paraFactor(t);
+  return p.lh !== undefined ? `calc(var(--brand-leading) * ${p.lh}em)` : `${p.em}em`;
 }
 
-function familyKey(t, style) {
-  return style.family || style.group?.family || Object.keys(t.type?.families || {})[0];
+// Paragraph space in em of the style's own size
+function paraEm(t) {
+  const p = paraFactor(t);
+  return p.lh !== undefined ? p.lh * (t.leading || 1.2) : p.em;
 }
 
-function fontFor(t, style) {
-  const stack = t.type?.families?.[familyKey(t, style)] || "";
-  const first = stack.split(",")[0].replace(/["']/g, "").trim();
-  return (t.type?.fonts || []).find((f) => f.family === first) || (t.type?.fonts || [])[0] || {};
+function fontOf(b, style) {
+  const fam = b.type?.families?.[style.family] || [];
+  const first = (Array.isArray(fam) ? fam[0] : String(fam).split(",")[0]).replace(/["']/g, "").trim();
+  return (b.type?.fonts || []).find((f) => f.family === first) || (b.type?.fonts || [])[0] || {};
+}
+
+function luminance(hex) {
+  const n = hex.replace("#", "");
+  const [r, g, bl] = [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+}
+export function contrast(a, b) {
+  const [l1, l2] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (l1 + 0.05) / (l2 + 0.05);
 }
 
 // --------------------------------------------------------------------------
-// CSS variables and classes from the tokens
+// CSS from the brand values
 // --------------------------------------------------------------------------
 
 export function brandCss() {
-  const t = tokens();
+  const b = brand();
+  const t = b.type || {};
   const lines = [];
 
-  for (const f of t.type?.fonts || []) {
+  for (const f of t.fonts || []) {
     if (!f.file) continue;
     lines.push(
       `@font-face{font-family:"${f.family}";src:url("/brand/${f.file}");font-weight:${f.weight || 400};font-style:${f.style || "normal"};font-display:swap}`
@@ -67,26 +91,22 @@ export function brandCss() {
   }
 
   const vars = [];
-  for (const c of t.color?.tokens || []) vars.push(`--brand-${c.name}:${hexOf(c)}`);
-  for (const [k, v] of Object.entries(t.type?.families || {})) vars.push(`--brand-font-${k}:${v}`);
+  for (const c of b.color?.colors || []) vars.push(`--brand-${c.name}:${c.hex}`);
+  for (const [k, v] of Object.entries(t.families || {})) vars.push(`--brand-font-${k}:${stack(v)}`);
+  vars.push(`--brand-leading:${t.leading || 1.2}`);
+  vars.push(`--brand-para:${paraCss(t)}`);
+  vars.push(`--brand-radius:${b.shape?.radius ?? 0}px`);
   lines.push(`:root{${vars.join(";")}}`);
 
-  for (const s of allStyles(t)) {
-    const f = fontFor(t, s);
-    const m = f.metrics || { ascent: 0.8, descent: 0.2, capHeight: 0.7 };
-    const size = num(s.fontSize);
-    const lead = num(s.lineHeight) || size * 1.2;
-    const para = num(s.paragraphSpacing);
+  for (const s of t.styles || []) {
+    const m = fontOf(b, s).metrics || { ascent: 0.8, descent: 0.2 };
     lines.push(
       `.ts-${s.name}{` +
-        `--ts-size:${size}px;--ts-leading:${lead}px;--ts-para:${para}px;` +
-        `--ts-ascent:${m.ascent};--ts-descent:${m.descent};--ts-cap:${m.capHeight};` +
-        `font-family:var(--brand-font-${familyKey(t, s)});` +
-        `font-weight:${s.fontWeight || 400};font-style:${s.fontStyle || "normal"};` +
-        `letter-spacing:${s.letterSpacing && s.letterSpacing !== "0" ? s.letterSpacing : "normal"};` +
-        `text-transform:${s.textTransform || "none"};` +
-        `font-size:calc(var(--ts-size) * var(--type-scale, 1));` +
-        `line-height:calc(var(--ts-leading) * var(--type-scale, 1))}`
+        `--ts-ascent:${m.ascent};--ts-descent:${m.descent};` +
+        `font-family:var(--brand-font-${s.family});font-weight:${s.weight || 400};font-style:${s.style || "normal"};` +
+        `font-size:calc(${s.size}px * var(--type-scale, 1));` +
+        `line-height:var(--brand-leading);` +
+        `text-transform:${CASE[s.case] || "none"}}`
     );
   }
   return `<style>${lines.join("\n")}</style>`;
@@ -97,34 +117,28 @@ export function brandCss() {
 // --------------------------------------------------------------------------
 
 export function palette(...args) {
-  const { pos, opts } = split(args);
-  const t = tokens();
-  const all = t.color?.tokens || [];
+  const { pos } = split(args);
+  const all = brand().color?.colors || [];
   const group = pos[0];
   const list = group ? all.filter((c) => c.group === group) : all;
-  const byName = Object.fromEntries(all.map((c) => [c.name, c]));
+  const light = all[1];        // the light ground (neutral)
   const blank = "---";
 
   const plates = list.map((c) => {
-    const ink = c.ink && byName[c.ink] ? `var(--brand-${c.ink})` : c.ink || "#000";
-    const specs = [
-      ["HEX", hexOf(c)],
-      ["RGB", c.rgb],
-      ["CMYK", c.cmyk],
-      ["PMS", c.pms],
-    ]
-      .map(([k, v]) => {
-        const parts = v ? String(v).split(/\s+/).map((p) => `<span>${esc(p)}</span>`).join("") : `<span>${blank}</span>`;
-        return `<div><dt>${k}</dt><dd>${parts}</dd></div>`;
-      })
-      .join("");
-    const note = c.usage && opts.notes !== false ? `<p class="colour__note">${esc(c.usage)}</p>` : "";
+    // Ink on the plate: whichever reads better, black or the light ground
+    const ink = light && contrast(c.hex, light.hex) > contrast(c.hex, "#000000") ? `var(--brand-${light.name})` : "#000";
+    const row = (k, v) => {
+      const parts = v == null || v === "" ? [blank] : Array.isArray(v) ? v : String(v).split(/\s+/);
+      return `<div><dt>${k}</dt><dd>${parts.map((p) => `<span>${esc(p)}</span>`).join("")}</dd></div>`;
+    };
+    const specs = row("HEX", c.hex) + row("RGB", c.rgb) + row("CMYK", c.cmyk) + row("PMS", c.pms);
+
     return (
       `<figure class="colour">` +
       `<div class="colour__plate" style="background:var(--brand-${c.name});color:${ink}">` +
-      `<div class="colour__head"><strong>${esc(c.label || c.name)}</strong><span>${esc(c.purpose || "")}</span></div>` +
+      `<div class="colour__head"><strong>${esc(c.label || c.name)}</strong><span>${esc(c.role || "")}</span></div>` +
       `<dl class="colour__specs">${specs}</dl>` +
-      `</div>${note}</figure>`
+      `</div></figure>`
     );
   });
   return `<div class="palette">${plates.join("")}</div>`;
@@ -136,57 +150,52 @@ export function palette(...args) {
 
 export function fontSpecimen(...args) {
   const { opts } = split(args);
-  const t = tokens();
-  const core = (t.type?.groups || []).find((g) => g.core) || t.type?.groups?.[0];
-  const big = opts.large || core?.styles?.[0]?.name;
-  const small = opts.small || core?.styles?.[1]?.name || big;
-  const f = fontFor(t, findStyle(t, big) || {});
+  const b = brand();
+  const styles = b.type?.styles || [];
+  const big = opts.large || styles[0]?.name;
+  const small = opts.small || styles[1]?.name || big;
+  const f = fontOf(b, styles.find((s) => s.name === big) || styles[0] || {});
   const name = `${f.family || ""} Regular`;
   const scale = opts.scale ? ` style="--type-scale:${Number(opts.scale)}"` : "";
   return (
     `<div class="plate plate--type"${scale}>` +
-    `<p class="ts-${big}" style="text-transform:uppercase;margin:0">${esc(name)} All Caps</p>` +
-    `<p class="ts-${small}" style="text-transform:none;margin:0 0 1.5em">${esc(name)}</p>` +
-    `<p class="ts-${small} specimen__glyphs" style="text-transform:none;margin:0">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 &amp; @ # $ % ( ) – , . : ; ! ? ’ “ ”</p>` +
+    `<p class="ts-${big}" style="text-transform:uppercase">${esc(name)} All Caps</p>` +
+    `<p class="ts-${small}" style="text-transform:none">${esc(name)}</p>` +
+    `<p class="ts-${small} specimen__glyphs" style="text-transform:none;margin-top:calc(var(--brand-leading) * 1em)">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 &amp; @ # $ % ( ) – , . : ; ! ? ’ “ ”</p>` +
     `</div>`
   );
 }
 
-const ratio = (a, b) => Math.round((a / b) * 100);
-
 export function typeStyle(content, ...args) {
   const { pos, opts } = split(args);
-  const t = tokens();
-  const s = findStyle(t, pos[0]);
-  if (!s) return `<p class="component-error">typeStyle: no style "${esc(pos[0])}" in brand/tokens.json</p>`;
+  const b = brand();
+  const t = b.type || {};
+  const s = (t.styles || []).find((x) => x.name === pos[0]);
+  if (!s) return problem(`typeStyle: no style "${pos[0]}" in brand/brand.json`);
 
-  const f = fontFor(t, s);
-  const unit = s.group?.unit || "px";
-  const size = num(s.fontSize);
-  const lead = num(s.lineHeight) || size * 1.2;
-  const para = num(s.paragraphSpacing);
-  const text = (content || s.sample || "").trim();
+  const unit = t.sizeUnit || "px";
+  const leading = t.leading || 1.2;
+  const fmt = (v) => `${+v.toFixed(2)}${unit}`;
+  const text = (content || "").trim();
   const paras = text
     .split(/\n\s*\n/)
     .map((p) => `<p>${p.trim().split("\n").map(esc).join("<br>")}</p>`)
     .join("");
-  const caps = s.textTransform === "uppercase" ? " (ALL CAPS)" : "";
-  const fmt = (v) => `${+v.toFixed(2)}${unit}`;
+  const caps = s.case === "upper" ? " (ALL CAPS)" : "";
   const specs = [
     `<strong>${esc(s.label || s.name)}</strong>`,
-    `${esc(f.family || familyKey(t, s))}${caps}`,
-    `~ ${ratio(lead, size)}% line height<br>= ${fmt(lead)} leading<br>/ ${fmt(size)} type`,
-    para ? `${fmt(para)} paragraph space` : "",
+    `${esc(fontOf(b, s).family || s.family)}${caps}`,
+    `~ ${Math.round(leading * 100)}% line height<br>= ${fmt(s.size * leading)} leading<br>/ ${fmt(s.size)} type`,
+    `${fmt(s.size * paraEm(t))} paragraph space`,
   ]
-    .filter(Boolean)
     .map((x) => `<p>${x}</p>`)
     .join("");
   const guides = opts.guides === false ? "" : " typestyle__sample--guides";
   const scale = opts.scale ? ` style="--type-scale:${Number(opts.scale)}"` : "";
   return (
     `<div class="typestyle"${scale}>` +
-    `<div class="plate plate--type"><div class="ts-${s.name} typestyle__sample${guides}">${paras}</div></div>` +
     `<div class="typestyle__specs">${specs}</div>` +
+    `<div class="plate plate--type"><div class="ts-${s.name} typestyle__sample${guides}">${paras}</div></div>` +
     `</div>`
   );
 }

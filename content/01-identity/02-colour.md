@@ -6,8 +6,12 @@ Blue is always present: as ink, as ground, or as the shadow of a duotone. Colour
 
 ## Primary
 
+The core brand colours. They stay the same from season to season.
+
 {% palette "primary" %}
 
 ## Secondary
+
+Seasonal colours for grounds and highlights. They change as the brand moves through seasons.
 
 {% palette "secondary" %}

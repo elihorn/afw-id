@@ -12,16 +12,20 @@ The brand font is Panchi Mono, an open-source monospace font. Everything typeset
 
 ## Core styles
 
-Most type should be set according to these core styles by default. Sizes are for an 11 × 17 poster; scale them proportionally for other formats, keeping the ~120% line height.
+Most type should be set according to these core styles by default. Sizes are for an 11 × 17 poster; scale them proportionally for other formats. Line height and paragraph space are shared by every style and scale with the type size.
 
-{% typeStyle "h1-print" %}
+---
+
+{% typeStyle "h1" %}
 BECAUSE GOOD MUSIC
 SOUNDS BETTER TOGETHER.
 
 CASSETTE CAFÉ
 {% endtypeStyle %}
 
-{% typeStyle "p1-print" %}
+---
+
+{% typeStyle "p1" %}
 We're creating a listening space on Salt Spring Island. A place where music matters, where we listen and connect. Local enthusiasts share their music, visiting and community DJs play records after dark, with full album deep listening sessions on each Sunday.
 
 Quality sound. Quality music.
@@ -33,15 +37,21 @@ Headers in H1, details in P1. Dates, times, places and names are laid out in ali
 
 <div class="plate plate--example">
 <div class="block row">
-<div><p class="ts-h1-print">Because good music<br>sounds better together.</p><p class="ts-p1-print">afriendlywave.com<br>@a.friendly.wave</p></div>
-<div><p class="ts-h1-print">Cassette<br>Café</p><p class="ts-p1-print">106 Lower Ganges Road<br>Salt Spring Island</p></div>
+<div><p class="ts-h1">Because good music<br>sounds better together.</p><p class="ts-p1">106 Lower Ganges Road</p></div>
+<div><p class="ts-h1">Cassette<br>Café</p><p class="ts-p1">Salt Spring Island</p></div>
 </div>
-<div class="block">
-<p class="ts-h1-print">May 23 – May 25</p>
-<p class="ts-p1-print names"><span>Andrew Ross Collins</span><span>Continental Breakfast (The Mole + Anja)</span><span>Kozue</span><span>Meredith Bates</span><span>Rave Coach</span><span>Sophia Danai</span><span>+ more</span></p>
+<div class="block row">
+<div>
+<p class="ts-h1">May 23 – May 25</p>
+<p class="ts-p1 names">Andrew Ross Collins<br />Continental Breakfast (The Mole + Anja)<br />Kozue<br />Meredith Bates<br />Rave Coach<br />Sophia Danai<br />+ more<br /></p>
 </div>
-<div class="block">
-<p class="ts-h1-print">May 30 – June 1</p>
-<p class="ts-p1-print names"><span>Chris Arnett</span><span>Connie Kuhns</span><span>David Wisdom</span><span>Matt Robertson</span><span>Pacific Coliseum (Teen Daze)</span><span>DJ Dampfnudel</span><span>+ more</span></p>
+<div>
+<p class="ts-h1">May 30 – June 1</p>
+<p class="ts-p1 names">Chris Arnett<br />Connie Kuhns<br />David Wisdom<br />Matt Robertson<br />Pacific Coliseum (Teen Daze)<br />DJ Dampfnudel<br />+ more<br /></p>
+</div>
+</div>
+<div class="block row">
+<div><p class="ts-p1">afriendlywave.com</p></div>
+<div><p class="ts-p1">@a.friendly.wave</p></div>
 </div>
 </div>

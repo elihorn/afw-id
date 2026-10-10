@@ -1,0 +1,118 @@
+{
+  "name": "A Friendly Wave",
+  "version": "1.0",
+  "updated": "2026-10-10",
+  "source": "AFW_001_Brand-Guideline_1.0.pdf (Memory Studio, May 2025)",
+  "color": {
+    "groups": {
+      "primary": "Primary",
+      "secondary": "Secondary"
+    },
+    "colors": [
+      {
+        "name": "blue",
+        "label": "Blue",
+        "group": "primary",
+        "hex": "#001A72",
+        "rgb": [0, 26, 114],
+        "cmyk": [100, 96, 23, 20],
+        "pms": "2747 C",
+        "role": "Core brand colour, always present"
+      },
+      {
+        "name": "neutral",
+        "label": "Neutral",
+        "group": "primary",
+        "hex": "#F0F0EB",
+        "rgb": [240, 240, 235],
+        "cmyk": [1, 0, 3, 2],
+        "pms": null,
+        "role": "Core background colour"
+      },
+      {
+        "name": "sky",
+        "label": "Sky",
+        "group": "secondary",
+        "hex": "#8FF1F2",
+        "rgb": [142, 241, 242],
+        "cmyk": null,
+        "pms": null,
+        "role": "Seasonal colour for backgrounds and highlights"
+      },
+      {
+        "name": "yellow",
+        "label": "Yellow",
+        "group": "secondary",
+        "hex": "#FFEA48",
+        "rgb": [255, 234, 72],
+        "cmyk": [0, 2, 3, 83],
+        "pms": null,
+        "role": "Seasonal colour for backgrounds and highlights"
+      },
+      {
+        "name": "orange",
+        "label": "Orange",
+        "group": "secondary",
+        "hex": "#FD8200",
+        "rgb": [253, 130, 0],
+        "cmyk": null,
+        "pms": null,
+        "role": "Seasonal colour for backgrounds and highlights"
+      },
+      {
+        "name": "green",
+        "label": "Green",
+        "group": "secondary",
+        "hex": "#009F6C",
+        "rgb": [0, 159, 108],
+        "cmyk": null,
+        "pms": null,
+        "role": "Seasonal colour for highlights"
+      }
+    ]
+  },
+  "type": {
+    "fonts": [
+      {
+        "family": "Panchi Mono",
+        "file": "fonts/PanchiMono-Regular.otf",
+        "weight": 400,
+        "style": "normal",
+        "source": "https://erwanleretif.xyz/typotheque",
+        "licence": "Open source",
+        "metrics": {
+          "ascent": 0.75,
+          "descent": 0.25,
+          "capHeight": 0.7,
+          "xHeight": 0.5
+        }
+      }
+    ],
+    "families": {
+      "mono": ["Panchi Mono", "Courier New", "ui-monospace", "monospace"]
+    },
+    "leading": 1.2,
+    "paragraphSpacing": "0.5lh",
+    "sizeUnit": "pt",
+    "sizeReference": "11 × 17 poster",
+    "styles": [
+      {
+        "name": "h1",
+        "label": "H1",
+        "family": "mono",
+        "size": 15,
+        "case": "upper"
+      },
+      {
+        "name": "p1",
+        "label": "P1",
+        "family": "mono",
+        "size": 10,
+        "case": "sentence"
+      }
+    ]
+  },
+  "shape": {
+    "radius": 0
+  }
+}

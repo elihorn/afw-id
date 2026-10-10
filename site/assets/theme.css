@@ -370,28 +370,26 @@ code, pre { font-family: var(--font-mono); font-size: 0.9em; }
 .colour__specs dt { text-transform: uppercase; }
 .colour__specs dd { margin: 0; display: flex; }
 .colour__specs dd span { min-width: 3em; }
-.colour__note { margin: 0.5rem 0 0; font-size: var(--text-small); color: var(--fg-muted); }
 
 /* Type */
 .plate--type { padding: 1.5rem; margin: 1rem 0; }
 .plate--type p { margin: 0; }
 .specimen__glyphs { word-break: break-all; }
-.typestyle { display: grid; grid-template-columns: minmax(0, 1fr) 13rem; gap: 1.5rem; align-items: start; margin: 1rem 0 0.5rem; }
+/* Specs to the left on wide screens, like .plate-row */
+.typestyle { display: grid; gap: 0.5rem; align-items: start; margin: 1rem 0 0.5rem; }
 .typestyle .plate--type { margin: 0; }
-.typestyle__sample p + p { margin-top: calc(var(--ts-para) * var(--type-scale, 1)); }
-.typestyle__specs { font-size: var(--text-small); padding-top: 1.5rem; }
+.typestyle__sample p + p { margin-top: var(--brand-para); }
+.typestyle__specs { font-size: var(--text-small); }
 .typestyle__specs p { margin: 0 0 0.75rem; }
 .typestyle__specs strong { font-weight: 400; }
-@media (max-width: 899px) { .typestyle { grid-template-columns: 1fr; gap: 0.75rem; } .typestyle__specs { padding-top: 0; } }
+@media (min-width: 1100px) { .typestyle { grid-template-columns: 10rem minmax(0, 1fr); gap: 1.5rem; } }
 
-/* Baseline guides: one line per line of text, on the baseline, from the font metrics in the tokens */
-.typestyle__sample--guides {
-  --lh: calc(var(--ts-leading) * var(--type-scale, 1));
-  --fs: calc(var(--ts-size) * var(--type-scale, 1));
-  --base: calc((var(--lh) - var(--fs) * (var(--ts-ascent) + var(--ts-descent))) / 2 + var(--fs) * var(--ts-ascent));
-}
+/* Baseline guides: one line per line of text, on the baseline.
+   All in em of the text itself, from the brand leading and the font metrics. */
 .typestyle__sample--guides p {
   background-image: linear-gradient(to bottom,
+  --lh: calc(var(--brand-leading) * 1em);
+  --base: calc((var(--lh) - (var(--ts-ascent) + var(--ts-descent)) * 1em) / 2 + var(--ts-ascent) * 1em);
     transparent calc(var(--base) - 1px), var(--guide) calc(var(--base) - 1px),
     var(--guide) var(--base), transparent var(--base));
   background-size: 100% var(--lh);
@@ -403,5 +401,6 @@ code, pre { font-family: var(--font-mono); font-size: 0.9em; }
 .plate--example { padding: 1.5rem; margin: 1rem 0 2rem; }
 .plate--example p { margin: 0; }
 .plate--example .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.5rem; }
-.plate--example .block + .block { margin-top: calc(var(--ts-leading, 18px) * var(--type-scale) * 1.5); }
+.plate--example p + p { margin-top: var(--brand-para); }
+.plate--example .block + .block { margin-top: calc(var(--brand-leading) * 2em); }
 .plate--example .names span { margin-right: 1.25em; }

@@ -14,7 +14,7 @@ npm run build    # writes the site to _site/
 
 ```
 content/          the guide: one folder or .md file per page
-brand/tokens.json brand colours and type (drives the swatch component)
+brand/brand.json  core brand values only (colours, fonts, type styles, leading): portable, no manual content
 site/             how the guide looks and works (layout, theme, components)
   assets/theme.css  fonts, colours, borders, sidebar width: edit the variables at the top
   _data/site.json   guide title, subtitle, version
@@ -40,7 +40,7 @@ Put each on its own line, with a blank line before and after. Paths are relative
 {% gallery "profiles", cols=1, captions=true %}  captions from file names
 {% gallery "profiles", min=180 %}                smallest tile width in px (default 240)
 
-{% swatches %}                                   every colour in brand/tokens.json
+{% swatches %}                                   every colour in brand/brand.json
 {% swatches "blue", "neutral", size="small" %}   a subset, smaller tiles
 
 {% download "_files/AFW_Logos.zip", "Logo package" %}
@@ -72,15 +72,15 @@ Markdown, images, components...
 {% logomarkLayout %}                                 mark aligned to the page edge
 ```
 
-### From the tokens (brand/tokens.json)
+### From the brand values (brand/brand.json)
 
 ```
 {% palette "primary" %}                              colour plates for a group (primary, secondary)
 {% fontSpecimen %}                                   brand font specimen
-{% typeStyle "h1-print" %}Sample text{% endtypeStyle %}   style with baseline guides and specs
+{% typeStyle "h1" %}Sample text{% endtypeStyle %}          style with baseline guides and specs
 ```
 
-Every type style in the tokens is also a CSS class (`.ts-h1-print`, `.ts-p1-print`, ...), and every colour a variable (`var(--brand-blue)`), for one-off layouts written in HTML. Print styles are shown at `--type-scale` (1.6) times their point size; change it in `site/assets/theme.css`.
+Every type style is also a CSS class (`.ts-h1`, `.ts-p1`, ...), and every colour a variable (`var(--brand-blue)`), for one-off layouts written in HTML. Line height (`type.leading`, e.g. 1.2) and paragraph space (`type.paragraphSpacing`, e.g. `0.5lh` = half the line height) are brand-wide and inherited by every style in em, as `var(--brand-leading)` and `var(--brand-para)`. Sample text and examples belong in the content pages, not in brand.json. Print styles are shown at `--type-scale` (1.6) times their point size; change it in `site/assets/theme.css`.
 
 ## Assets
 

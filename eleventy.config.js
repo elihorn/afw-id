@@ -11,7 +11,8 @@ import { columns, column } from "./site/lib/layout.js";
 export default function (eleventyConfig) {
   // Every page uses the same layout unless its front matter says otherwise.
   eleventyConfig.addGlobalData("layout", "page.njk");
-  eleventyConfig.addGlobalData("tokens", () => JSON.parse(fs.readFileSync(path.resolve("brand/tokens.json"), "utf8")));
+  // Core brand values (portable): brand/brand.json
+  eleventyConfig.addGlobalData("brand", () => JSON.parse(fs.readFileSync(path.resolve("brand/brand.json"), "utf8")));
 
   // Sidebar, breadcrumbs, previous/next
   eleventyConfig.addCollection("navTree", (api) => buildTree(api.getAll()));
