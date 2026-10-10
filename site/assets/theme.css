@@ -221,6 +221,7 @@ code, pre { font-family: var(--font-mono); font-size: 0.9em; }
 .content th { font-weight: 400; color: var(--fg-muted); }
 .content tr:last-child td { border-bottom: var(--border); }
 @media (max-width: 639px) { .content table { display: block; overflow-x: auto; } }
+.content td img { width: 10rem; max-width: none; border-radius: var(--radius); box-shadow: var(--media-shadow); }
 
 /* Previous / next */
 .pager { display: flex; justify-content: space-between; gap: 1rem; padding: 1.5rem var(--gutter) 2.5rem; border-top: var(--border); margin: 0 var(--gutter); padding-left: 0; padding-right: 0; }
@@ -387,9 +388,9 @@ code, pre { font-family: var(--font-mono); font-size: 0.9em; }
 /* Baseline guides: one line per line of text, on the baseline.
    All in em of the text itself, from the brand leading and the font metrics. */
 .typestyle__sample--guides p {
-  background-image: linear-gradient(to bottom,
   --lh: calc(var(--brand-leading) * 1em);
   --base: calc((var(--lh) - (var(--ts-ascent) + var(--ts-descent)) * 1em) / 2 + var(--ts-ascent) * 1em);
+  background-image: linear-gradient(to bottom,
     transparent calc(var(--base) - 1px), var(--guide) calc(var(--base) - 1px),
     var(--guide) var(--base), transparent var(--base));
   background-size: 100% var(--lh);
