@@ -4,8 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "eleventy --serve",
-    "build": "eleventy",
-    "clean": "rm -rf _site",
+    "build": "node scripts/build.js",
+    "versions": "node scripts/build.js --versions-only",
+    "clean": "rm -rf _site .versions",
     "check": "eleventy --quiet --output=.check && rm -rf .check"
   },
   "devDependencies": {

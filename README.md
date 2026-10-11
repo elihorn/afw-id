@@ -7,8 +7,11 @@ The AFW brand guide as a static site. Content is plain folders and markdown; the
 ```sh
 npm install
 npm run dev      # preview at http://localhost:8080 with live reload
-npm run build    # writes the site to _site/
+npm run build    # writes the site, with every version, to _site/
+npm run versions # builds older versions (branches v1, v2...) so the dropdown works in dev
 ```
+
+The current brand lives on `main`. Earlier major versions live on branches named `v1`, `v2`, ...; edit one by committing on its branch.
 
 ## Where things are
 
@@ -76,11 +79,27 @@ Markdown, images, components...
 
 ```
 {% palette "primary" %}                              colour plates for a group (primary, secondary)
-{% fontSpecimen %}                                   brand font specimen
+{% fontSpecimen %}                                   each brand font: name, licence, source link, characters
 {% typeStyle "h1" %}Sample text{% endtypeStyle %}          style with baseline guides and specs
+{% typeLayout "p1" %}rows{% endtypeLayout %}           rows on the column and baseline grid, with specs
 ```
 
-Every type style is also a CSS class (`.ts-h1`, `.ts-p1`, ...), and every colour a variable (`var(--brand-blue)`), for one-off layouts written in HTML. Line height (`type.leading`, e.g. 1.2) and paragraph space (`type.paragraphSpacing`, e.g. `0.5lh` = half the line height) are brand-wide and inherited by every style in em, as `var(--brand-leading)` and `var(--brand-para)`. Sample text and examples belong in the content pages, not in brand.json. Print styles are shown at `--type-scale` (1.6) times their point size; change it in `site/assets/theme.css`.
+Font names, weights and links always come from brand.json; don't type them into pages.
+
+Every type style is also a CSS class (`.ts-h1`, `.ts-p1`, ...), and every colour a variable (`var(--brand-blue)`), for one-off layouts written in HTML. Line height (`type.leading`, e.g. 1.2) and paragraph space (`type.paragraphSpacing`, e.g. `0.5lh` = half the line height) are brand-wide and inherited by every style in em (a style can add `tracking` in 1/1000 em, as in Illustrator), as `var(--brand-leading)` and `var(--brand-para)`. Sample text and examples belong in the content pages, not in brand.json. Sizes are in `type.sizeUnit` on `type.sizeReference` (v2: px on 1080 x 1440). They are shown on screen at `--type-scale` times their size: 1.6 for pt, 1.25 for px (set in `site/lib/brand.js`). `type.leading` may be a fraction such as `"4/3"`.
+
+Layouts on the column and baseline grid use `{% typeLayout %}` around rows of HTML set with the style classes. The base style (default p1) sets size and leading; `grid.margin` and `grid.gutter` in brand.json set the margins and gutters; the specs beside it are generated. In a row, `span-2` spans two columns:
+
+```html
+{% typeLayout "p1" %}
+<div class="type-row">
+<p class="ts-h1">Label</p>
+<p class="span-2">Body text in the base style...</p>
+</div>
+{% endtypeLayout %}
+```
+
+Options: `cols=3` (default), `guides=false` to hide the grid.
 
 ## Assets
 

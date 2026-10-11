@@ -9,8 +9,9 @@
 // Asset file names are kept exactly as they are.
 
 import path from "node:path";
+import { CONTENT_DIR } from "./source.js";
 
-export const CONTENT_DIR = path.resolve("content");
+export { CONTENT_DIR };
 
 const ORDER_PREFIX = /^\d+[-._ ]+/;
 

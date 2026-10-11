@@ -16,10 +16,18 @@ This file describes the project as it stands. It is context, not a spec: the str
 
 ```sh
 npm run dev     # http://localhost:8080, live reload
-npm run build   # -> _site/
-npm run clean   # remove _site (do this after renaming content folders)
-npm run check   # full build into a throwaway folder, safe while dev is running
+npm run build     # clean full build with all versions -> _site/ (deploy; not while dev runs)
+npm run versions  # build only the v1, v2... branches into _site/v/N/, safe while dev runs
+npm run clean     # remove _site and .versions (do this after renaming content folders)
+npm run check     # build of the current version into a throwaway folder, safe while dev runs
 ```
+
+### Versions
+
+- `main` is the current brand version, served at `/`. Each branch named `v1`, `v2`, ... (pattern `^v\d+$`) is an earlier major version, served at `/v/N/`. Other branches are ignored. To edit an old version, commit on its branch; the latest commit is what is shown. Tags are optional bookmarks and are not used by the build.
+- `scripts/build.js` exports each version branch's committed `content/` and `brand/` to `.versions/vN/` and builds them with `main`'s site code (`AFW_SOURCE`, `AFW_PREFIX`, read in `site/lib/source.js`). So layout, theme and components are shared; content and brand.json must stay compatible with them.
+- The sidebar dropdown (`site/lib/versions.js`) lists main plus the version branches, labelled from each `brand.json` "version". It opens the same page in the chosen version, or that version's home if the page does not exist there.
+- In dev, other versions only load after `npm run versions` (rerun after committing to a version branch).
 
 ### Keeping the local preview working
 
@@ -27,7 +35,7 @@ E usually has `npm run dev` running on :8080 while Claude edits.
 
 - Edit sources only (`content/`, `brand/`, `site/`). Never edit `_site/`: it is regenerated on every build and changes there are lost.
 - Do not run `npm run build` or `npm run clean` while dev is running; they rewrite or delete the folder the dev server is serving. To verify a change, use `npm run check`, or `curl` the running server.
-- Rebuilds wait 300 ms for saves to settle (`setWatchThrottleWaitTime`). If a page still looks stale after an edit (mostly `site/lib/*.js`), `touch` the changed file to trigger a rebuild; no restart needed.
+- Rebuilds wait 300 ms for saves to settle (`setWatchThrottleWaitTime`). This does not fully prevent stale `site/lib/*.js` modules when they change together with other files: after editing `site/lib`, `curl` the page to confirm; if it is stale, wait a moment and `touch eleventy.config.js` (reloads the config and everything it imports; touching the lib file itself is not always enough, and a touch in the same instant as the edits can be swallowed by the same rebuild). No restart needed.
 - Renamed or deleted files leave stale copies in `_site/`. If that matters, ask E to stop dev, then `npm run clean && npm run dev`.
 
 ## How it is organised (current)
@@ -65,8 +73,7 @@ Done: scaffold, sidebar/nav, gallery, Marks (plates + layout diagrams), Colour (
 Not done yet (roughly in order, open to change):
 - Colour combinations (PDF pp. 4-5) and asset/reference specs (p. 7).
 - Tag `brand-1.0` once this version of the guide is complete (repo initialised, not tagged yet).
-- Version dropdown: build each `brand-*` tag under `/v/<version>/`. Note `brandCss` writes an absolute `/brand/...` font URL that HtmlBasePlugin does not rewrite.
-- Deploy to Cloudflare Pages on a custom domain.
+- Deploy to Cloudflare Pages on a custom domain. Build command `npm run build`; the build needs the `vN` branches fetched (Pages clones may be shallow).
 - Optionally generate the Claude Design System artifact from this repo.
 - Season 4 (Oct 2026) may bring brand 1.1 or 2.0.
 
