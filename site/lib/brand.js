@@ -103,6 +103,11 @@ function luminance(hex) {
   const [r, g, bl] = [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
   return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
 }
+// The lightest colour in a palette: the light ground for plates and ink choices
+function lightest(colors) {
+  return colors.reduce((a, c) => (!a || luminance(c.hex) > luminance(a.hex) ? c : a), null);
+}
+
 export function contrast(a, b) {
   const [l1, l2] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (l1 + 0.05) / (l2 + 0.05);
@@ -125,7 +130,11 @@ export function brandCss() {
   }
 
   const vars = [];
-  for (const c of b.color?.colors || []) vars.push(`--brand-${c.name}:${c.hex}`);
+  const colors = b.color?.colors || [];
+  for (const c of colors) vars.push(`--brand-${c.name}:${c.hex}`);
+  // The light ground (White in 2.0, Neutral in 1.0): the lightest colour, for plates
+  const ground = lightest(colors);
+  if (ground) vars.push(`--brand-ground:var(--brand-${ground.name})`);
   for (const [k, v] of Object.entries(t.families || {})) vars.push(`--brand-font-${k}:${stack(v)}`);
   vars.push(`--brand-leading:${+leadingOf(t).toFixed(6)}`);
   vars.push(`--screen-scale:${SCREEN_SCALE[t.sizeUnit] || 1}`, `--type-scale:var(--screen-scale)`);
@@ -158,8 +167,7 @@ export function palette(...args) {
   const all = brand().color?.colors || [];
   const group = pos[0];
   const list = group ? all.filter((c) => c.group === group) : all;
-  // The light ground (white in 2.0): the lightest colour in the palette
-  const light = all.reduce((a, c) => (!a || luminance(c.hex) > luminance(a.hex) ? c : a), null);
+  const light = lightest(all);
   const blank = "---";
 
   const plates = list.map((c) => {
