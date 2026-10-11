@@ -4,11 +4,7 @@ title: Typography
 
 ## Brand font
 
-The brand font is Panchi Mono, an open-source monospace font. Everything typeset uses Panchi Mono Regular: ALL CAPS for labels, names and headers; sentence case for statements.
-
 {% fontSpecimen %}
-
-{% download "https://erwanleretif.xyz/typotheque", "Panchi Mono, Erwan Le Rétif" %}
 
 ## Core styles
 
