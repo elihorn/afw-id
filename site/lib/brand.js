@@ -119,7 +119,7 @@ export function brandCss() {
   for (const c of b.color?.colors || []) vars.push(`--brand-${c.name}:${c.hex}`);
   for (const [k, v] of Object.entries(t.families || {})) vars.push(`--brand-font-${k}:${stack(v)}`);
   vars.push(`--brand-leading:${+leadingOf(t).toFixed(6)}`);
-  vars.push(`--type-scale:${SCREEN_SCALE[t.sizeUnit] || 1}`);
+  vars.push(`--screen-scale:${SCREEN_SCALE[t.sizeUnit] || 1}`, `--type-scale:var(--screen-scale)`);
   vars.push(`--brand-para:${paraCss(t)}`);
   vars.push(`--brand-radius:${b.shape?.radius ?? 0}px`);
   lines.push(`:root{${vars.join(";")}}`);
@@ -177,14 +177,14 @@ export function palette(...args) {
 // --------------------------------------------------------------------------
 
 // One row per font in brand.json: name, licence and source link beside its character set.
-// Every font is shown at the same size, 1.5x the body (smallest) style, on the brand leading
-// (v2: 18/24px).
+// Every font is shown at the body (smallest) style size on the brand leading, enlarged on screen
+// by --example-scale like the other type examples.
 export function fontSpecimen() {
   const b = brand();
   const fonts = b.type?.fonts || [];
   const sizes = (b.type?.styles || []).map((s) => s.size).filter(Boolean);
   const body = sizes.length ? Math.min(...sizes) : 10;
-  const size = `calc(${+(body * 1.5).toFixed(3)}px * var(--type-scale, 1))`;
+  const size = `calc(${+body.toFixed(3)}px * var(--type-scale, 1))`;
   const rows = fonts
     .map((f) => {
       const name = fontName(f);
@@ -257,10 +257,12 @@ export function typeLayout(content, ...args) {
   const cols = Number(opts.cols || 3);
   const px = (v) => `calc(${v}px * var(--type-scale, 1))`;
   const vars = [`--layout-cols:${cols}`];
+  // Without grid tokens, gutter = 2x and margin = 1x the base size (the module rule), so the
+  // spacing always scales with the type. Only token values are listed in the specs.
   const row = s.size * leading;
-  vars.push(`--margin-y:${px(row)}`);
-  if (g.margin != null) vars.push(`--margin-x:${px(g.margin)}`);
-  if (g.gutter != null) vars.push(`--gap:${px(g.gutter)}`);
+  const gutter = g.gutter ?? s.size * 2;
+  const margin = g.margin ?? gutter / 2;
+  vars.push(`--margin-y:${px(row)}`, `--margin-x:${px(margin)}`, `--gap:${px(gutter)}`);
   const specs = [
     `<strong>Layout</strong>`,
     `${esc(s.label || s.name)} base, ${cols} columns`,

@@ -8,7 +8,9 @@ title: Typography
 
 ## Core styles
 
-Most type should be set in these core styles. Sizes are for a 1080 × 1440 px canvas; scale everything proportionally for other formats. Leading is 4/3 of the type size and paragraph space is one full line, so text stays on the baseline grid. Display is the exception: it is at 100% line height.
+Most type should be set in these core styles. Sizes are for a 1080 × 1440 px canvas; scale everything proportionally for other formats. Line height is 4/3 (133%) of the type size and paragraph space is one full line, so text stays on the baseline grid.
+
+Display is the exception with a 1/1 (100%) line height.
 
 ---
 
@@ -36,12 +38,9 @@ Quality sound. Quality music.
 
 ## Layout
 
-Layouts are built from one module: the body type size (P1). Every other measurement is a multiple of it.
+Type should be aligned on a baseline grid, and left-aligned within columns.
 
-- **Baseline:** one row is one line of body text, 4/3 of the module. Paragraph space is one row, and blocks are separated by two empty rows.
-- **Columns:** gutters are 2 modules. Side margins are 1 module, half a gutter, so the middle of each gutter divides the full width into equal thirds.
-- **Top and bottom margins** are one row, so the first line sits on the baseline grid.
-- On a 1080 × 1440 px canvas the module is 12px and a row is 16px: 90 modules across and 90 rows down. Each 12 × 16 cell has the same 3:4 proportion as the canvas.
+The baseline is 4/3 (133%) the margin width and column gutters are 2/1 the margin. So a 16px baseline yields 12px margins and 24px gutters.
 
 {% typeLayout "p1" %}
 
