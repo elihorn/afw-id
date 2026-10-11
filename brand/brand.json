@@ -1,8 +1,8 @@
 {
   "name": "A Friendly Wave",
-  "version": "1.0",
+  "version": "2.0",
   "updated": "2026-10-10",
-  "source": "AFW_001_Brand-Guideline_1.0.pdf (Memory Studio, May 2025)",
+  "source": "AFW Identity v2.0 (Memory Studio, Season 4, Oct 2026); colours from Season 4 Colourways, Option 1",
   "color": {
     "groups": {
       "primary": "Primary",
@@ -30,87 +30,110 @@
         "role": "Core background colour"
       },
       {
-        "name": "sky",
-        "label": "Sky",
-        "group": "secondary",
-        "hex": "#8FF1F2",
-        "rgb": [142, 241, 242],
-        "cmyk": null,
-        "pms": null,
-        "role": "Seasonal colour for backgrounds and highlights"
-      },
-      {
-        "name": "yellow",
-        "label": "Yellow",
-        "group": "secondary",
-        "hex": "#FFEA48",
-        "rgb": [255, 234, 72],
-        "cmyk": [0, 2, 3, 83],
-        "pms": null,
-        "role": "Seasonal colour for backgrounds and highlights"
-      },
-      {
         "name": "orange",
         "label": "Orange",
         "group": "secondary",
-        "hex": "#FD8200",
-        "rgb": [253, 130, 0],
+        "hex": "#E06C3A",
+        "rgb": [224, 108, 58],
         "cmyk": null,
         "pms": null,
         "role": "Seasonal colour for backgrounds and highlights"
       },
       {
-        "name": "green",
-        "label": "Green",
+        "name": "magenta",
+        "label": "Magenta",
         "group": "secondary",
-        "hex": "#009F6C",
-        "rgb": [0, 159, 108],
+        "hex": "#B34479",
+        "rgb": [179, 68, 121],
         "cmyk": null,
         "pms": null,
-        "role": "Seasonal colour for highlights"
+        "role": "Seasonal colour for backgrounds and highlights"
+      },
+      {
+        "name": "lime",
+        "label": "Lime",
+        "group": "secondary",
+        "hex": "#E2FF78",
+        "rgb": [226, 255, 120],
+        "cmyk": null,
+        "pms": null,
+        "role": "Seasonal colour for backgrounds and highlights"
       }
     ]
   },
   "type": {
     "fonts": [
       {
-        "family": "Panchi Mono",
-        "file": "fonts/PanchiMono-Regular.otf",
+        "family": "Iosevka",
+        "file": "fonts/Iosevka-Regular.woff2",
         "weight": 400,
         "style": "normal",
-        "source": "https://erwanleretif.xyz/typotheque",
-        "licence": "Open source",
+        "source": "https://typeof.net/Iosevka/",
+        "licence": "SIL Open Font License 1.1",
         "metrics": {
-          "ascent": 0.75,
-          "descent": 0.25,
-          "capHeight": 0.7,
-          "xHeight": 0.5
+          "ascent": 0.965,
+          "descent": 0.285,
+          "capHeight": 0.735,
+          "xHeight": 0.52
+        }
+      },
+      {
+        "family": "Iosevka Aile",
+        "file": "fonts/IosevkaAile-Heavy.woff2",
+        "weight": 900,
+        "style": "normal",
+        "source": "https://typeof.net/Iosevka/",
+        "licence": "SIL Open Font License 1.1",
+        "metrics": {
+          "ascent": 0.965,
+          "descent": 0.285,
+          "capHeight": 0.735,
+          "xHeight": 0.52
         }
       }
     ],
     "families": {
-      "mono": ["Panchi Mono", "Courier New", "ui-monospace", "monospace"]
+      "mono": ["Iosevka", "ui-monospace", "monospace"],
+      "display": ["Iosevka Aile", "Iosevka", "sans-serif"]
     },
-    "leading": 1.2,
-    "paragraphSpacing": "0.5lh",
-    "sizeUnit": "pt",
-    "sizeReference": "11 × 17 poster",
+    "leading": "4/3",
+    "paragraphSpacing": "1lh",
+    "sizeUnit": "px",
+    "sizeReference": "1080 × 1440 px",
     "styles": [
+      {
+        "name": "display",
+        "label": "Display",
+        "family": "display",
+        "weight": 900,
+        "size": 64,
+        "leading": 1.0,
+        "case": "upper",
+        "tracking": -35
+      },
       {
         "name": "h1",
         "label": "H1",
         "family": "mono",
-        "size": 15,
+        "weight": 400,
+        "size": 12,
         "case": "upper"
       },
       {
         "name": "p1",
         "label": "P1",
         "family": "mono",
-        "size": 10,
+        "weight": 400,
+        "size": 12,
         "case": "sentence"
       }
     ]
+  },
+  "grid": {
+    "module": 12,
+    "row": 16,
+    "margin": 12,
+    "gutter": 24
   },
   "shape": {
     "radius": 0
