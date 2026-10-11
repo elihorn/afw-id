@@ -24,7 +24,15 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar__head">
         <a class="pill pill--strong" href="/">{{ site.title }}</a>
-        <span class="sidebar__sub">{{ site.subtitle }} {{ site.version }}</span>
+        {% if versions.length > 1 %}
+        <span class="version">
+          <select data-version-select aria-label="Brand version">
+            {% for v in versions %}<option value="{{ v.url }}"{% if v.url == prefix %} selected{% endif %}>{{ site.subtitle }} {{ v.label }}</option>{% endfor %}
+          </select>
+        </span>
+        {% else %}
+        <span class="sidebar__sub">{{ site.subtitle }} {{ brand.version }}</span>
+        {% endif %}
       </div>
       <nav class="nav" aria-label="Sections">
         {{ collections.navTree|navHtml(page.url)|safe }}

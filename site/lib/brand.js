@@ -3,17 +3,20 @@
 //
 //   {% brandCss %}                         (in the layout) colour + type variables, @font-face, .ts-* classes
 //   {% palette "primary" %}                large colour plates for one group
-//   {% fontSpecimen %}                     brand font specimen
+//   {% fontSpecimen %}                     each brand font: name, licence, source, character set
 //   {% typeStyle "h1" %}text{% endtypeStyle %}   style specimen with baseline guides + specs
+//   {% typeLayout "p1" %}rows{% endtypeLayout %}  .type-row HTML on the column/baseline grid, specs beside it
 //
+// Style "tracking" is in 1/1000 em, as in Illustrator (-35 = -0.035em).
 // Line height and paragraph space are brand-wide values (type.leading, type.paragraphSpacing),
-// not per style: every style inherits them, in em, so they scale with the type size.
-// Every style also becomes a CSS class (.ts-h1, .ts-p1, ...) for one-off layouts written in HTML.
+// inherited by every style in em, so they scale with the type size. A style may set its own
+// "leading" (e.g. 1.0 for display); paragraph space then follows that style's line height.
+// Every style also becomes a CSS class (.ts-h1, .ts-p1, ...) for layouts written in HTML
+// (see .type-layout in theme.css). Font names always come from brand.json, never the content.
 
 import fs from "node:fs";
 import path from "node:path";
-
-const BRAND = path.resolve("brand/brand.json");
+import { BRAND_FILE as BRAND, PREFIX } from "./source.js";
 
 export const brand = () => JSON.parse(fs.readFileSync(BRAND, "utf8"));
 
@@ -47,15 +50,37 @@ function paraFactor(t) {
   return { em: parseFloat(v) };
 }
 
-function paraCss(t) {
+function paraCss(t, leadingVar = "--brand-leading") {
   const p = paraFactor(t);
-  return p.lh !== undefined ? `calc(var(--brand-leading) * ${p.lh}em)` : `${p.em}em`;
+  return p.lh !== undefined ? `calc(var(${leadingVar}) * ${p.lh}em)` : `${p.em}em`;
 }
 
 // Paragraph space in em of the style's own size
-function paraEm(t) {
+// A leading may be a number (1.2) or a fraction string ("4/3")
+export function ratio(v, fallback = 1.2) {
+  if (v == null || v === "") return fallback;
+  if (typeof v === "string" && v.includes("/")) {
+    const [a, b] = v.split("/").map(Number);
+    return b ? a / b : fallback;
+  }
+  return Number(v) || fallback;
+}
+const leadingOf = (t, s = {}) => ratio(s.leading ?? t.leading);
+
+// Print sizes (pt) are shown larger on screen than pixel sizes
+const SCREEN_SCALE = { pt: 1.6, px: 1.25 };
+
+function paraEm(t, leading = leadingOf(t)) {
   const p = paraFactor(t);
-  return p.lh !== undefined ? p.lh * (t.leading || 1.2) : p.em;
+  return p.lh !== undefined ? p.lh * leading : p.em;
+}
+
+// Display name of a font: "name" if given, else family + weight name ("Iosevka Aile Heavy")
+const WEIGHTS = { 100: "Thin", 200: "ExtraLight", 300: "Light", 400: "Regular", 500: "Medium", 600: "SemiBold", 700: "Bold", 800: "ExtraBold", 900: "Heavy" };
+export function fontName(f) {
+  if (f.name) return f.name;
+  const italic = f.style === "italic" ? " Italic" : "";
+  return `${f.family || ""} ${WEIGHTS[f.weight || 400] || f.weight}${italic}`.trim();
 }
 
 function fontOf(b, style) {
@@ -86,14 +111,15 @@ export function brandCss() {
   for (const f of t.fonts || []) {
     if (!f.file) continue;
     lines.push(
-      `@font-face{font-family:"${f.family}";src:url("/brand/${f.file}");font-weight:${f.weight || 400};font-style:${f.style || "normal"};font-display:swap}`
+      `@font-face{font-family:"${f.family}";src:url("${PREFIX}brand/${f.file}");font-weight:${f.weight || 400};font-style:${f.style || "normal"};font-display:swap}`
     );
   }
 
   const vars = [];
   for (const c of b.color?.colors || []) vars.push(`--brand-${c.name}:${c.hex}`);
   for (const [k, v] of Object.entries(t.families || {})) vars.push(`--brand-font-${k}:${stack(v)}`);
-  vars.push(`--brand-leading:${t.leading || 1.2}`);
+  vars.push(`--brand-leading:${+leadingOf(t).toFixed(6)}`);
+  vars.push(`--type-scale:${SCREEN_SCALE[t.sizeUnit] || 1}`);
   vars.push(`--brand-para:${paraCss(t)}`);
   vars.push(`--brand-radius:${b.shape?.radius ?? 0}px`);
   lines.push(`:root{${vars.join(";")}}`);
@@ -105,8 +131,10 @@ export function brandCss() {
         `--ts-ascent:${m.ascent};--ts-descent:${m.descent};` +
         `font-family:var(--brand-font-${s.family});font-weight:${s.weight || 400};font-style:${s.style || "normal"};` +
         `font-size:calc(${s.size}px * var(--type-scale, 1));` +
-        `line-height:var(--brand-leading);` +
-        `text-transform:${CASE[s.case] || "none"}}`
+        `--ts-leading:${s.leading != null ? +ratio(s.leading).toFixed(6) : "var(--brand-leading)"};--ts-para:${paraCss(t, "--ts-leading")};` +
+        `line-height:var(--ts-leading);` +
+        `text-transform:${CASE[s.case] || "none"};` +
+        `letter-spacing:${(s.tracking || 0) / 1000}em}`
     );
   }
   return `<style>${lines.join("\n")}</style>`;
@@ -148,22 +176,31 @@ export function palette(...args) {
 // Type
 // --------------------------------------------------------------------------
 
-export function fontSpecimen(...args) {
-  const { opts } = split(args);
+// One row per font in brand.json: name, licence and source link beside its character set.
+// Every font is shown at the same size, 1.5x the body (smallest) style, on the brand leading
+// (v2: 18/24px).
+export function fontSpecimen() {
   const b = brand();
-  const styles = b.type?.styles || [];
-  const big = opts.large || styles[0]?.name;
-  const small = opts.small || styles[1]?.name || big;
-  const f = fontOf(b, styles.find((s) => s.name === big) || styles[0] || {});
-  const name = `${f.family || ""} Regular`;
-  const scale = opts.scale ? ` style="--type-scale:${Number(opts.scale)}"` : "";
-  return (
-    `<div class="plate plate--type"${scale}>` +
-    `<p class="ts-${big}" style="text-transform:uppercase">${esc(name)} All Caps</p>` +
-    `<p class="ts-${small}" style="text-transform:none">${esc(name)}</p>` +
-    `<p class="ts-${small} specimen__glyphs" style="text-transform:none;margin-top:calc(var(--brand-leading) * 1em)">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 &amp; @ # $ % ( ) – , . : ; ! ? ’ “ ”</p>` +
-    `</div>`
-  );
+  const fonts = b.type?.fonts || [];
+  const sizes = (b.type?.styles || []).map((s) => s.size).filter(Boolean);
+  const body = sizes.length ? Math.min(...sizes) : 10;
+  const size = `calc(${+(body * 1.5).toFixed(3)}px * var(--type-scale, 1))`;
+  const rows = fonts
+    .map((f) => {
+      const name = fontName(f);
+      const set = `class="plate plate--type" style="font-family:${esc(stack([f.family]))};font-weight:${f.weight || 400};font-style:${f.style || "normal"};font-size:${size}"`;
+      const src = f.source ? `<p><a href="${esc(f.source)}" target="_blank" rel="noopener">Source</a></p>` : "";
+      return (
+        `<figure class="plate-row specimen">` +
+        `<figcaption><p>${esc(name)}</p>${f.licence ? `<p>${esc(f.licence)}</p>` : ""}${src}</figcaption>` +
+        `<div ${set}>` +
+        `<p class="specimen__name">${esc(name)}</p>` +
+        `<p class="specimen__glyphs">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 &amp; @ # $ % ( ) – , . : ; ! ? ’ “ ”</p>` +
+        `</div></figure>`
+      );
+    })
+    .join("");
+  return `<div class="plates">${rows}</div>`;
 }
 
 export function typeStyle(content, ...args) {
@@ -174,7 +211,7 @@ export function typeStyle(content, ...args) {
   if (!s) return problem(`typeStyle: no style "${pos[0]}" in brand/brand.json`);
 
   const unit = t.sizeUnit || "px";
-  const leading = t.leading || 1.2;
+  const leading = leadingOf(t, s);
   const fmt = (v) => `${+v.toFixed(2)}${unit}`;
   const text = (content || "").trim();
   const paras = text
@@ -184,18 +221,61 @@ export function typeStyle(content, ...args) {
   const caps = s.case === "upper" ? " (ALL CAPS)" : "";
   const specs = [
     `<strong>${esc(s.label || s.name)}</strong>`,
-    `${esc(fontOf(b, s).family || s.family)}${caps}`,
+    `${esc(fontName(fontOf(b, s)))}${caps}`,
     `~ ${Math.round(leading * 100)}% line height<br>= ${fmt(s.size * leading)} leading<br>/ ${fmt(s.size)} type`,
-    `${fmt(s.size * paraEm(t))} paragraph space`,
+    s.tracking ? `${s.tracking} tracking` : "",
+    `${fmt(s.size * paraEm(t, leading))} paragraph space`,
   ]
+    .filter(Boolean)
     .map((x) => `<p>${x}</p>`)
     .join("");
   const guides = opts.guides === false ? "" : " typestyle__sample--guides";
   const scale = opts.scale ? ` style="--type-scale:${Number(opts.scale)}"` : "";
   return (
-    `<div class="typestyle"${scale}>` +
-    `<div class="typestyle__specs">${specs}</div>` +
+    `<figure class="plate-row typestyle"${scale}>` +
+    `<figcaption>${specs}</figcaption>` +
     `<div class="plate plate--type"><div class="ts-${s.name} typestyle__sample${guides}">${paras}</div></div>` +
-    `</div>`
+    `</figure>`
+  );
+}
+
+// A layout on the column and baseline grid. The content is .type-row HTML (see theme.css);
+// the base style sets size and leading, grid.margin and grid.gutter (in the type size unit,
+// on the same reference format) set the side margins and column gutters; top and bottom
+// margins are one line of the base style, so the text stays on the baseline grid. Specs beside it.
+export function typeLayout(content, ...args) {
+  const { pos, opts } = split(args);
+  const b = brand();
+  const t = b.type || {};
+  const g = b.grid || {};
+  const s = (t.styles || []).find((x) => x.name === (pos[0] || "p1"));
+  if (!s) return problem(`typeLayout: no style "${pos[0] || "p1"}" in brand/brand.json`);
+
+  const unit = t.sizeUnit || "px";
+  const fmt = (v) => `${+v.toFixed(2)}${unit}`;
+  const leading = leadingOf(t, s);
+  const cols = Number(opts.cols || 3);
+  const px = (v) => `calc(${v}px * var(--type-scale, 1))`;
+  const vars = [`--layout-cols:${cols}`];
+  const row = s.size * leading;
+  if (g.margin != null) vars.push(`--margin:${px(row)} ${px(g.margin)}`);
+  if (g.gutter != null) vars.push(`--gap:${px(g.gutter)}`);
+  const specs = [
+    `<strong>Layout</strong>`,
+    `${esc(s.label || s.name)} base, ${cols} columns`,
+    `${fmt(s.size * leading)} leading<br>${fmt(s.size * paraEm(t, leading))} paragraph space`,
+    g.margin != null || g.gutter != null
+      ? [g.margin != null ? `${fmt(g.margin)} margins<br>${fmt(row)} top and bottom` : "", g.gutter != null ? `${fmt(g.gutter)} gutters` : ""].filter(Boolean).join("<br>")
+      : "",
+  ]
+    .filter(Boolean)
+    .map((x) => `<p>${x}</p>`)
+    .join("");
+  const guides = opts.guides === false ? "" : " guides";
+  return (
+    `<figure class="plate-row type-layout-row" style="${vars.join(";")}">` +
+    `<figcaption>${specs}</figcaption>` +
+    `<div class="plate plate--type plate--layout"><div class="type-layout ts-${s.name}${guides}">${content.trim()}</div></div>` +
+    `</figure>`
   );
 }

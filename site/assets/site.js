@@ -20,6 +20,24 @@ document.querySelector("[data-menu-toggle]")?.addEventListener("click", () => {
   });
 })();
 
+// Version dropdown: open the same page in the chosen version, or its home page if that page does not exist there
+(() => {
+  const select = document.querySelector("[data-version-select]");
+  if (!select) return;
+  const from = select.value;
+  select.addEventListener("change", async () => {
+    const to = select.value;
+    const rest = location.pathname.startsWith(from) ? location.pathname.slice(from.length) : "";
+    const target = to + rest;
+    try {
+      const res = await fetch(target, { method: "HEAD" });
+      location.href = res.ok ? target + location.hash : to;
+    } catch (e) {
+      location.href = to;
+    }
+  });
+})();
+
 // Section links: list this page's h2 headings under its sidebar link
 (() => {
   const link = document.querySelector('.nav a[aria-current="page"]');

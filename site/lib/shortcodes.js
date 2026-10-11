@@ -15,10 +15,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { relFromContent, assetUrl } from "./paths.js";
+import { BRAND_FILE as BRAND } from "./source.js";
 
 const IMAGE = /\.(jpe?g|png|gif|webp|avif|svg)$/i;
 const VIDEO = /\.(mp4|webm|mov)$/i;
-const BRAND = path.resolve("brand/brand.json");
 
 const esc = (s) =>
   String(s).replace(
