@@ -2,6 +2,12 @@
 title: Marks
 ---
 
+## Origin
+
+The letterforms are drawn from A Friendly Wave's custom speakers. In the 'e', the cabinet becomes the body, the woofer becomes the counter, and the port becomes the notch cut in from the edge.
+
+{% logoOrigin %}
+
 ## Logo type
 
 {% plates "blue", only="Logo-Type_01.svg, Logo-Type_02.svg", labels="Logo type, Logo type stacked", bg="white" %}

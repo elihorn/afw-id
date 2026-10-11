@@ -891,6 +891,19 @@ pre {
   bottom: 0;
   transform: translateY(-1px) rotate(-135deg);
 }
+.logo-layout--origin {
+  aspect-ratio: auto;
+  padding: 8% 6%;
+}
+.logo-layout--origin svg {
+  width: 100%;
+}
+.lo-guide {
+  fill: none;
+  stroke: var(--guide);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
 .logo-layout--mark svg {
   position: absolute;
   right: 0;

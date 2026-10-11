@@ -5,7 +5,7 @@ import { buildTree, navHtml, trail, pager } from "./site/lib/nav.js";
 import { gallery, swatches, download } from "./site/lib/shortcodes.js";
 import { copyContentAssets } from "./site/lib/assets.js";
 import { brandCss, palette, fontSpecimen, typeStyle, typeLayout } from "./site/lib/brand.js";
-import { plates, logotypeLayout, logomarkLayout } from "./site/lib/logo.js";
+import { plates, logotypeLayout, logomarkLayout, logoOrigin } from "./site/lib/logo.js";
 import { columns, column } from "./site/lib/layout.js";
 import { CONTENT_DIR, BRAND_DIR, BRAND_FILE, PREFIX } from "./site/lib/source.js";
 import { versions } from "./site/lib/versions.js";
@@ -34,6 +34,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addShortcode("plates", plates);
   eleventyConfig.addShortcode("logotypeLayout", logotypeLayout);
   eleventyConfig.addShortcode("logomarkLayout", logomarkLayout);
+  eleventyConfig.addShortcode("logoOrigin", logoOrigin);
   eleventyConfig.addShortcode("palette", palette);
   eleventyConfig.addShortcode("fontSpecimen", fontSpecimen);
   eleventyConfig.addPairedShortcode("typeStyle", typeStyle);
