@@ -112,6 +112,11 @@
       }
     ]
   },
+  "grid": {
+    "base": "p1",
+    "margin": "1em",
+    "gutter": "1em"
+  },
   "shape": {
     "radius": 0
   }

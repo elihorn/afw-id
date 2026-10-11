@@ -29,7 +29,7 @@ Quality sound. Quality music.
 
 ## Layout
 
-Type sits on a column and baseline grid: labels in H1 in the left column, details in P1 in aligned columns, with two empty lines between blocks. Side margins are half a gutter, so the middle of each gutter divides the full width into equal thirds.
+Type sits on a column and baseline grid: labels in H1 in the left column, details in P1 in aligned columns, with two empty lines between blocks. Margins and column gutters are the same as the type size.
 
 {% typeLayout "p1" %}
 
