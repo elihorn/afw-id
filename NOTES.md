@@ -37,5 +37,5 @@ Blue on green is below 4.5:1, so it passes WCAG AA only for large text.
 
 - Seasonal colours (Option 1) were sampled from AFW_IDv2-1_1-Season_Colours.png: orange #E06C3A, magenta #B34479, lime #E2FF78. Confirm against the design file; no CMYK or PMS yet.
 - The same image shows the blue as #001B72 (as in the logo SVGs); brand.json keeps #001A72.
-- v2 type is set on a 1080 x 1440 px canvas with a 12px module: type = 1 module, leading 4/3 (16px rows, 90 x 90 cells of 12 x 16), gutter 2 modules, margin 1 module. Styles: P1 and H1 12/16, Display 64/64 (leading 1.0, 4 rows, so stacked lines stay on the 16px rows). Paragraph space is one line (16px). The copy on the typography page states these relationships in modules and rows; if the module changes, update its 12px / 16px example.
+- v2 type is set on a 1080 x 1440 px canvas. Leading 4/3 (P1 12/16), paragraph space one line, margins and gutters equal to the type size (12px), from grid tokens relative to P1. Display 64/64 (leading 1.0, 4 rows of 16). The typography copy gives the 12/16 type and 12px margin example.
 - Iosevka web fonts are subset from the installed 34.1.0 TTCs to Latin, punctuation and common symbols (~200 KB each).

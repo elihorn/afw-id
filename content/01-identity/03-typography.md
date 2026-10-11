@@ -40,7 +40,7 @@ Quality sound. Quality music.
 
 Type should be aligned on a baseline grid, and left-aligned within columns.
 
-The baseline is 4/3 (133%) the margin width and column gutters are 2/1 the margin. So a 16px baseline yields 12px margins and 24px gutters.
+Margins and column gutters are the same as the type size. So 12px type on a 16px line height has 12px margins and gutters.
 
 {% typeLayout "p1" %}
 

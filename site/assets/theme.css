@@ -709,7 +709,6 @@ pre {
     var(--guide) 35%,
     transparent
   ); /* baseline and column guides */
-  --guide-third: color-mix(
     in srgb,
     currentColor 20%,
     transparent
@@ -984,7 +983,7 @@ pre {
   max-width: 36em;
 }
 
-/* Guides: a line on every baseline (and column edges and gutter centres in a .type-layout), drawn out to the
+/* Guides: a line on every baseline (and column edges in a .type-layout), drawn out to the
    edges of the plate. Pseudo-elements overshoot and the plate clips them. */
 .plate--type {
   position: relative;
@@ -1031,11 +1030,7 @@ pre {
     var(--guide-soft) 0 1px,
     transparent 1px calc(var(--w) - 1px),
     var(--guide-soft) calc(var(--w) - 1px) var(--w),
-    transparent var(--w) calc(var(--w) + var(--gap, 1.5rem) / 2),
-    var(--guide-third) calc(var(--w) + var(--gap, 1.5rem) / 2)
-      calc(var(--w) + var(--gap, 1.5rem) / 2 + 1px),
-    transparent calc(var(--w) + var(--gap, 1.5rem) / 2 + 1px)
-      calc(var(--w) + var(--gap, 1.5rem))
+    transparent var(--w) calc(var(--w) + var(--gap, 1.5rem))
   );
 }
 
@@ -1043,8 +1038,8 @@ pre {
    Set the base style on the container (e.g. .ts-p1); rows are separated by two blank lines.
    Add .guides to show the grid. */
 .plate--layout {
-  /* top/bottom: one line of the base style; sides: grid.margin, else half a gutter */
-  padding: var(--margin-y, 1.5rem) var(--margin-x, calc(var(--gap, 1.5rem) / 2));
+  /* grid.margin on all sides */
+  padding: var(--margin, 1.5rem);
 }
 .type-layout {
   --cols: var(--layout-cols, 3);

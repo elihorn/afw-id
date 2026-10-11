@@ -130,10 +130,9 @@
     ]
   },
   "grid": {
-    "module": 12,
-    "row": 16,
-    "margin": 12,
-    "gutter": 24
+    "base": "p1",
+    "margin": "1em",
+    "gutter": "1em"
   },
   "shape": {
     "radius": 0

@@ -56,6 +56,15 @@ function paraCss(t, leadingVar = "--brand-leading") {
 }
 
 // Paragraph space in em of the style's own size
+// A grid length relative to a style: "2/3lh" = two thirds of a line, "1.5lh", "2em" = 2 type
+// sizes, or a plain number in the size unit
+function gridLength(v, size, row) {
+  const str = String(v).trim();
+  if (str.endsWith("lh")) return ratio(str.slice(0, -2), 0) * row;
+  if (str.endsWith("em")) return ratio(str.slice(0, -2), 0) * size;
+  return ratio(str, 0);
+}
+
 // A leading may be a number (1.2) or a fraction string ("4/3")
 export function ratio(v, fallback = 1.2) {
   if (v == null || v === "") return fallback;
@@ -240,16 +249,16 @@ export function typeStyle(content, ...args) {
 }
 
 // A layout on the column and baseline grid. The content is .type-row HTML (see theme.css);
-// the base style sets size and leading, grid.margin and grid.gutter (in the type size unit,
-// on the same reference format) set the side margins and column gutters; top and bottom
-// margins are one line of the base style, so the text stays on the baseline grid. Specs beside it.
+// the base style (grid.base, default p1) sets size and leading; grid.margin and grid.gutter set
+// the margins (all four sides) and column gutters, relative to the base style. Specs beside it.
 export function typeLayout(content, ...args) {
   const { pos, opts } = split(args);
   const b = brand();
   const t = b.type || {};
   const g = b.grid || {};
-  const s = (t.styles || []).find((x) => x.name === (pos[0] || "p1"));
-  if (!s) return problem(`typeLayout: no style "${pos[0] || "p1"}" in brand/brand.json`);
+  const base = pos[0] || g.base || "p1";
+  const s = (t.styles || []).find((x) => x.name === base);
+  if (!s) return problem(`typeLayout: no style "${base}" in brand/brand.json`);
 
   const unit = t.sizeUnit || "px";
   const fmt = (v) => `${+v.toFixed(2)}${unit}`;
@@ -257,19 +266,29 @@ export function typeLayout(content, ...args) {
   const cols = Number(opts.cols || 3);
   const px = (v) => `calc(${v}px * var(--type-scale, 1))`;
   const vars = [`--layout-cols:${cols}`];
-  // Without grid tokens, gutter = 2x and margin = 1x the base size (the module rule), so the
-  // spacing always scales with the type. Only token values are listed in the specs.
+  // grid.margin and grid.gutter are lengths relative to the base style: "1.5lh" (lines),
+  // "2em" (type sizes) or a plain number in the size unit. Without tokens: one type size each.
   const row = s.size * leading;
-  const gutter = g.gutter ?? s.size * 2;
-  const margin = g.margin ?? gutter / 2;
-  vars.push(`--margin-y:${px(row)}`, `--margin-x:${px(margin)}`, `--gap:${px(gutter)}`);
+  const margin = gridLength(g.margin ?? "1em", s.size, row);
+  const gutter = gridLength(g.gutter ?? "1em", s.size, row);
+  vars.push(`--margin:${px(margin)}`, `--gap:${px(gutter)}`);
+  const rel = (v) => {
+    const str = typeof v === "string" ? v : "";
+    if (str.endsWith("lh")) return ` (${str.slice(0, -2)} × leading)`;
+    if (str.endsWith("em")) return str === "1em" ? " (= type size)" : ` (${str.slice(0, -2)} × type size)`;
+    return "";
+  };
+  const spacing =
+    g.margin == null && g.gutter == null
+      ? ""
+      : margin === gutter && String(g.margin) === String(g.gutter)
+        ? `${fmt(margin)} margins and gutters${rel(g.margin)}`
+        : [g.margin != null ? `${fmt(margin)} margins${rel(g.margin)}` : "", g.gutter != null ? `${fmt(gutter)} gutters${rel(g.gutter)}` : ""].filter(Boolean).join("<br>");
   const specs = [
     `<strong>Layout</strong>`,
     `${esc(s.label || s.name)} base, ${cols} columns`,
     `${fmt(s.size * leading)} leading<br>${fmt(s.size * paraEm(t, leading))} paragraph space`,
-    g.margin != null || g.gutter != null
-      ? [g.margin != null ? `${fmt(g.margin)} margins<br>${fmt(row)} top and bottom` : "", g.gutter != null ? `${fmt(g.gutter)} gutters` : ""].filter(Boolean).join("<br>")
-      : "",
+    spacing,
   ]
     .filter(Boolean)
     .map((x) => `<p>${x}</p>`)
