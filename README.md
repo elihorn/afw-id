@@ -6,9 +6,9 @@ The AFW brand guide as a static site. Content is plain folders and markdown; the
 
 ```sh
 npm install
-npm run dev      # preview at http://localhost:8080 with live reload
+npm run dev      # preview at http://localhost:8080 with live reload (older versions built at startup)
 npm run build    # writes the site, with every version, to _site/
-npm run versions # builds older versions (branches v1, v2...) so the dropdown works in dev
+npm run versions # rebuilds older versions (branches v1, v2...) while dev is running
 ```
 
 The current brand lives on `main`. Earlier major versions live on branches named `v1`, `v2`, ...; edit one by committing on its branch.
