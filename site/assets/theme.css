@@ -1035,7 +1035,8 @@ pre {
    Set the base style on the container (e.g. .ts-p1); rows are separated by two blank lines.
    Add .guides to show the grid. */
 .plate--layout {
-  padding: var(--margin, 1.5rem);
+  /* top/bottom: one line of the base style; sides: grid.margin, else half a gutter */
+  padding: var(--margin-y, 1.5rem) var(--margin-x, calc(var(--gap, 1.5rem) / 2));
 }
 .type-layout {
   --cols: var(--layout-cols, 3);

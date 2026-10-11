@@ -258,7 +258,8 @@ export function typeLayout(content, ...args) {
   const px = (v) => `calc(${v}px * var(--type-scale, 1))`;
   const vars = [`--layout-cols:${cols}`];
   const row = s.size * leading;
-  if (g.margin != null) vars.push(`--margin:${px(row)} ${px(g.margin)}`);
+  vars.push(`--margin-y:${px(row)}`);
+  if (g.margin != null) vars.push(`--margin-x:${px(g.margin)}`);
   if (g.gutter != null) vars.push(`--gap:${px(g.gutter)}`);
   const specs = [
     `<strong>Layout</strong>`,
