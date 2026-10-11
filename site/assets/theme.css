@@ -567,7 +567,7 @@ pre {
   width: 100%;
   border-radius: var(--radius);
   box-shadow: var(--media-shadow);
-  background-color: var(--brand-neutral);
+  background-color: var(--brand-white);
 }
 .gallery figcaption {
   margin-top: 0.375rem;
@@ -713,7 +713,7 @@ pre {
     currentColor 20%,
     transparent
   ); /* gutter centres: thirds of the full width */
-  --plate-bg: var(--brand-neutral, #f0f0eb);
+  --plate-bg: var(--brand-white, #ffffff);
   --plate-ink: var(--brand-blue, #001a72);
   --type-scale: 1.6; /* brand sizes shown on screen at this multiple; brandCss sets it per size unit (pt 1.6, px 1.25) as --screen-scale */
   --example-scale: 1.5; /* enlarges every type example on screen: specimens, styles, layouts (presentation only) */

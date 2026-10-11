@@ -158,7 +158,8 @@ export function palette(...args) {
   const all = brand().color?.colors || [];
   const group = pos[0];
   const list = group ? all.filter((c) => c.group === group) : all;
-  const light = all[1];        // the light ground (neutral)
+  // The light ground (white in 2.0): the lightest colour in the palette
+  const light = all.reduce((a, c) => (!a || luminance(c.hex) > luminance(a.hex) ? c : a), null);
   const blank = "---";
 
   const plates = list.map((c) => {

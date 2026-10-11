@@ -13,29 +13,39 @@
         "name": "blue",
         "label": "Blue",
         "group": "primary",
-        "hex": "#001A72",
-        "rgb": [0, 26, 114],
+        "hex": "#001B72",
+        "rgb": [0, 27, 114],
         "cmyk": [100, 96, 23, 20],
         "pms": "2747 C",
         "role": "Core brand colour, always present"
       },
       {
-        "name": "neutral",
-        "label": "Neutral",
+        "name": "blue-light",
+        "label": "Light Blue",
         "group": "primary",
-        "hex": "#F0F0EB",
-        "rgb": [240, 240, 235],
-        "cmyk": [1, 0, 3, 2],
+        "hex": "#0E2D97",
+        "rgb": [14, 45, 151],
+        "cmyk": [100, 95, 12, 3],
         "pms": null,
-        "role": "Core background colour"
+        "role": "Dark Mode posters only, as the ground for black images"
+      },
+      {
+        "name": "white",
+        "label": "White",
+        "group": "primary",
+        "hex": "#FFFFFF",
+        "rgb": [255, 255, 255],
+        "cmyk": [0, 0, 0, 0],
+        "pms": null,
+        "role": "Neutral base, used for backgrounds and type"
       },
       {
         "name": "orange",
         "label": "Orange",
         "group": "secondary",
-        "hex": "#E06C3A",
-        "rgb": [224, 108, 58],
-        "cmyk": null,
+        "hex": "#FF5E43",
+        "rgb": [255, 94, 67],
+        "cmyk": [0, 78, 77, 0],
         "pms": null,
         "role": "Seasonal colour for backgrounds and highlights"
       },
@@ -45,7 +55,7 @@
         "group": "secondary",
         "hex": "#B34479",
         "rgb": [179, 68, 121],
-        "cmyk": null,
+        "cmyk": [33, 87, 32, 4],
         "pms": null,
         "role": "Seasonal colour for backgrounds and highlights"
       },
@@ -55,7 +65,7 @@
         "group": "secondary",
         "hex": "#E2FF78",
         "rgb": [226, 255, 120],
-        "cmyk": null,
+        "cmyk": [16, 0, 64, 0],
         "pms": null,
         "role": "Seasonal colour for backgrounds and highlights"
       }

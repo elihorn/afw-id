@@ -4,11 +4,11 @@ title: Marks
 
 ## Logo type
 
-{% plates "blue", only="Logo-Type_01.svg, Logo-Type_02.svg", labels="Logo type, Logo type stacked", bg="neutral" %}
+{% plates "blue", only="Logo-Type_01.svg, Logo-Type_02.svg", labels="Logo type, Logo type stacked", bg="white" %}
 
 ## Logo mark
 
-{% plates "blue", only="Logo-Mark_AFW.svg", labels="AFW", bg="neutral" %}
+{% plates "blue", only="Logo-Mark_AFW.svg", labels="AFW", bg="white" %}
 
 ## Layout
 

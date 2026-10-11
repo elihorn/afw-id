@@ -39,3 +39,9 @@ Blue on green is below 4.5:1, so it passes WCAG AA only for large text.
 - The same image shows the blue as #001B72 (as in the logo SVGs); brand.json keeps #001A72.
 - v2 type is set on a 1080 x 1440 px canvas. Leading 4/3 (P1 12/16), paragraph space one line, margins and gutters equal to the type size (12px), from grid tokens relative to P1. Display 64/64 (leading 1.0, 4 rows of 16). The typography copy gives the 12/16 type and 12px margin example.
 - Iosevka web fonts are subset from the installed 34.1.0 TTCs to Latin, punctuation and common symbols (~200 KB each).
+
+## Brand 2.0 colours (Oct 2026)
+
+- Sampled from the v2 design files (posts, stories, radio, illustrations): orange is now #FF5E43; magenta #B34479 and lime #E2FF78 unchanged; blue is exported as #001B72 everywhere, so the 2.0 token uses that (1.0 keeps #001A72).
+- CMYK for orange, magenta and lime converted with US Web Coated (SWOP) v2, perceptual intent: the same setup reproduces the 1.0 guide's blue (100 96 23 20) within 2 points. Orange and lime are brighter than CMYK can print, so printed versions will be duller; check a proof. No PMS matches yet.
+- The hand-drawn line illustrations are black (#000000) on white; black is not a brand colour.
