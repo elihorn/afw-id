@@ -2,16 +2,14 @@
 title: Colour
 ---
 
-Blue is always present: as ink, as ground, or as the shadow of a duotone. Colour is always flat, with no gradients, shadows or outlines.
-
 ## Primary
 
-The core brand colours. They stay the same from season to season.
+Blue is the core brand colour that stays consistent.
 
 {% palette "primary" %}
 
 ## Secondary
 
-Seasonal colours for grounds and highlights. They change as the brand moves through seasons.
+Seasonal colours for grounds and highlights may change through versions and event seasons.
 
 {% palette "secondary" %}
