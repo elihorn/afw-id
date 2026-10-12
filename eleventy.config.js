@@ -52,6 +52,15 @@ export default function (eleventyConfig) {
     eleventyExcludeFromCollections: true,
   });
 
+  // Keep search engines out (only meaningful at the site root, so not in /v/N/ builds)
+  if (PREFIX === "/") {
+    eleventyConfig.addTemplate("robots.njk", "User-agent: *\nDisallow: /\n", {
+      layout: false,
+      fixedPermalink: "/robots.txt",
+      eleventyExcludeFromCollections: true,
+    });
+  }
+
   // ids on headings (used for in-page links in the sidebar)
   eleventyConfig.addPlugin(IdAttributePlugin);
   // Rewrites absolute URLs when the site is built under a sub-path (versions)
