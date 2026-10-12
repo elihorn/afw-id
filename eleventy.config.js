@@ -44,6 +44,14 @@ export default function (eleventyConfig) {
   // Brand colours, fonts and type styles as CSS (used in the layout)
   eleventyConfig.addShortcode("brandCss", brandCss);
 
+  // Not-found page for every version (hosts serve the nearest 404.html; without one,
+  // Cloudflare Pages would answer every unknown URL with the home page)
+  eleventyConfig.addTemplate("404.md", "That page does not exist in this version of the guide.\n\n[Back to the start](/)", {
+    title: "Page not found",
+    fixedPermalink: "/404.html",
+    eleventyExcludeFromCollections: true,
+  });
+
   // ids on headings (used for in-page links in the sidebar)
   eleventyConfig.addPlugin(IdAttributePlugin);
   // Rewrites absolute URLs when the site is built under a sub-path (versions)

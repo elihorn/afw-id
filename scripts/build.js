@@ -15,13 +15,25 @@ const OUT = process.env.AFW_OUT || "_site";
 const eleventy = (env = {}, args = []) =>
   execFileSync("npx", ["@11ty/eleventy", "--quiet", ...args], { stdio: "inherit", env: { ...process.env, ...env } });
 
+// Hosts such as Cloudflare Pages may clone only the branch being built: fetch the
+// version branches from origin first (shallow is enough for git archive).
+if (!versionsOnly) {
+  try {
+    execFileSync("git", ["fetch", "--no-tags", "--depth=1", "origin", "+refs/heads/v*:refs/remotes/origin/v*"], { stdio: "inherit" });
+  } catch (e) {
+    console.warn("Could not fetch version branches from origin; building with local branches only.");
+  }
+}
+const branches = versionBranches();
+if (!branches.length) console.warn("No version branches (v1, v2...) found: only the current version will be built.");
+
 if (!versionsOnly) {
   fs.rmSync(OUT, { recursive: true, force: true });
   console.log("main -> /");
   eleventy({}, [`--output=${OUT}`]);
 }
 
-for (const b of versionBranches()) {
+for (const b of branches) {
   const src = path.join(".versions", b.name);
   const out = path.join(OUT, "v", String(b.n));
   fs.rmSync(src, { recursive: true, force: true });
