@@ -61,6 +61,18 @@ export default function (eleventyConfig) {
     });
   }
 
+  // Links to other sites in markdown open in a new tab
+  eleventyConfig.amendLibrary("md", (md) => {
+    const fallback = md.renderer.rules.link_open || ((tokens, i, options, env, self) => self.renderToken(tokens, i, options));
+    md.renderer.rules.link_open = (tokens, i, options, env, self) => {
+      if (/^https?:\/\//.test(tokens[i].attrGet("href") || "")) {
+        tokens[i].attrSet("target", "_blank");
+        tokens[i].attrSet("rel", "noopener");
+      }
+      return fallback(tokens, i, options, env, self);
+    };
+  });
+
   // ids on headings (used for in-page links in the sidebar)
   eleventyConfig.addPlugin(IdAttributePlugin);
   // Rewrites absolute URLs when the site is built under a sub-path (versions)

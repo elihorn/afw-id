@@ -644,6 +644,14 @@ pre {
   background: var(--bg-2);
   text-decoration: none;
 }
+/* Links that open in a new tab end with an arrow */
+a[target="_blank"]::after {
+  content: "\2197"; /* &nearr; */
+  margin-left: 0.25em;
+}
+.download[target="_blank"]::after {
+  margin-left: -0.375rem; /* the pill's gap already spaces it */
+}
 .download:hover {
   background: var(--bg-3);
 }
@@ -890,6 +898,11 @@ pre {
 .ll-varrow::after {
   bottom: 0;
   transform: translateY(-1px) rotate(-135deg);
+}
+/* Images and plates placed straight in a column fill its width */
+.column > img,
+.column > .plate > img {
+  width: 100%;
 }
 .logo-layout--origin {
   aspect-ratio: auto;

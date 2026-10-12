@@ -48,6 +48,7 @@ Put each on its own line, with a blank line before and after. Paths are relative
 
 {% download "_files/AFW_Logos.zip", "Logo package" %}
 {% download "https://drive.google.com/...", "Print masters" %}
+{% download "https://afriendlywave.com/" %}              link pill labelled afriendlywave.com
 ```
 
 Galleries sort by file name, so prefix files with numbers to control order. They accept jpg, png, gif, webp, avif, svg, and mp4/webm (videos autoplay muted).
