@@ -2,7 +2,7 @@
 title: A Friendly Wave
 ---
 
-# Brand Guideline 2.0
+# {{ site.subtitle }} {{ brand.version }}
 
 <video src="aFW.mp4" autoplay muted loop playsinline></video>
 
