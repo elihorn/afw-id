@@ -137,7 +137,9 @@ export function download(...args) {
   if (!target) return problem("download: no file or link given");
 
   if (/^https?:\/\//.test(target)) {
-    return `<a class="download" href="${esc(target)}" target="_blank" rel="noopener"><span class="download__label">${esc(text || target)}</span><span class="download__meta">&nearr;</span></a>`;
+    // Label defaults to the address without the protocol or trailing slash; the arrow comes from CSS
+    const label = text || target.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    return `<a class="download" href="${esc(target)}" target="_blank" rel="noopener"><span class="download__label">${esc(label)}</span></a>`;
   }
   const file = path.resolve(pageDir(this), target);
   if (!fs.existsSync(file))

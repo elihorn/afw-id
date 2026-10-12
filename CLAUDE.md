@@ -15,7 +15,7 @@ This file describes the project as it stands. It is context, not a spec: the str
 ## Run
 
 ```sh
-npm run dev     # http://localhost:8080, live reload
+npm run dev     # builds older versions into _site/v/, then http://localhost:8080 with live reload
 npm run build     # clean full build with all versions -> _site/ (deploy; not while dev runs)
 npm run versions  # build only the v1, v2... branches into _site/v/N/, safe while dev runs
 npm run clean     # remove _site and .versions (do this after renaming content folders)
@@ -27,7 +27,7 @@ npm run check     # build of the current version into a throwaway folder, safe w
 - `main` is the current brand version, served at `/`. Each branch named `v1`, `v2`, ... (pattern `^v\d+$`) is an earlier major version, served at `/v/N/`. Other branches are ignored. To edit an old version, commit on its branch; the latest commit is what is shown. Tags are optional bookmarks and are not used by the build.
 - `scripts/build.js` exports each version branch's committed `content/` and `brand/` to `.versions/vN/` and builds them with `main`'s site code (`AFW_SOURCE`, `AFW_PREFIX`, read in `site/lib/source.js`). So layout, theme and components are shared; content and brand.json must stay compatible with them.
 - The sidebar dropdown (`site/lib/versions.js`) lists main plus the version branches, labelled from each `brand.json` "version". It opens the same page in the chosen version, or that version's home if the page does not exist there.
-- In dev, other versions only load after `npm run versions` (rerun after committing to a version branch).
+- `npm run dev` builds the older versions once at startup. After committing to a version branch, or after `npm run clean`, run `npm run versions` (safe while dev runs) or restart dev.
 
 ### Keeping the local preview working
 

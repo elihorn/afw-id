@@ -38,8 +38,8 @@
 
   /* Colour (light) */
   --bg: #dededb;
-  --bg-2: rgb(241, 241, 240);
-  --bg-3: #e9e9e5;
+  --bg-2: #ffffff;
+  --bg-3: #eeeeeb;
   --fg: #282a2a;
   --fg-muted: #6b6d6d;
   --line: #b6b6b5;
@@ -64,7 +64,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #2b2e2e;
-    --bg-2: #151616;
+    --bg-2: #000000;
     --bg-3: #1e2020;
     --fg: #efefef;
     --fg-muted: #a8aaaa;
@@ -74,7 +74,7 @@
 }
 :root[data-theme="dark"] {
   --bg: #2b2e2e;
-  --bg-2: #151616;
+  --bg-2: #000000;
   --bg-3: #1e2020;
   --fg: #efefef;
   --fg-muted: #a8aaaa;
@@ -567,6 +567,7 @@ pre {
   width: 100%;
   border-radius: var(--radius);
   box-shadow: var(--media-shadow);
+  background-color: var(--brand-ground);
 }
 .gallery figcaption {
   margin-top: 0.375rem;
@@ -643,6 +644,14 @@ pre {
   background: var(--bg-2);
   text-decoration: none;
 }
+/* Links that open in a new tab end with an arrow */
+a[target="_blank"]::after {
+  content: "\2197"; /* &nearr; */
+  margin-left: 0.25em;
+}
+.download[target="_blank"]::after {
+  margin-left: -0.375rem; /* the pill's gap already spaces it */
+}
 .download:hover {
   background: var(--bg-3);
 }
@@ -708,14 +717,14 @@ pre {
     var(--guide) 35%,
     transparent
   ); /* baseline and column guides */
-  --guide-third: color-mix(
     in srgb,
     currentColor 20%,
     transparent
   ); /* gutter centres: thirds of the full width */
-  --plate-bg: var(--brand-neutral, #f0f0eb);
+  --plate-bg: var(--brand-ground, #ffffff); /* the brand's lightest colour */
   --plate-ink: var(--brand-blue, #001a72);
-  --type-scale: 1.6; /* brand sizes shown on screen at this multiple; brandCss sets it per size unit (pt 1.6, px 1.25) */
+  --type-scale: 1.6; /* brand sizes shown on screen at this multiple; brandCss sets it per size unit (pt 1.6, px 1.25) as --screen-scale */
+  --example-scale: 1.5; /* enlarges every type example on screen: specimens, styles, layouts (presentation only) */
 }
 
 .plate {
@@ -890,6 +899,24 @@ pre {
   bottom: 0;
   transform: translateY(-1px) rotate(-135deg);
 }
+/* Images and plates placed straight in a column fill its width */
+.column > img,
+.column > .plate > img {
+  width: 100%;
+}
+.logo-layout--origin {
+  aspect-ratio: auto;
+  padding: 8% 6%;
+}
+.logo-layout--origin svg {
+  width: 100%;
+}
+.lo-guide {
+  fill: none;
+  stroke: var(--guide);
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
 .logo-layout--mark svg {
   position: absolute;
   right: 0;
@@ -959,6 +986,12 @@ pre {
 .specimen__glyphs {
   word-break: break-all;
 }
+/* All type examples are shown at the screen scale times --example-scale */
+.specimen,
+.typestyle,
+.type-layout-row {
+  --type-scale: calc(var(--screen-scale, 1.6) * var(--example-scale, 1));
+}
 .typestyle__sample p + p {
   margin-top: var(--ts-para, var(--brand-para));
 }
@@ -976,7 +1009,7 @@ pre {
   max-width: 36em;
 }
 
-/* Guides: a line on every baseline (and column edges and gutter centres in a .type-layout), drawn out to the
+/* Guides: a line on every baseline (and column edges in a .type-layout), drawn out to the
    edges of the plate. Pseudo-elements overshoot and the plate clips them. */
 .plate--type {
   position: relative;
@@ -1023,11 +1056,7 @@ pre {
     var(--guide-soft) 0 1px,
     transparent 1px calc(var(--w) - 1px),
     var(--guide-soft) calc(var(--w) - 1px) var(--w),
-    transparent var(--w) calc(var(--w) + var(--gap, 1.5rem) / 2),
-    var(--guide-third) calc(var(--w) + var(--gap, 1.5rem) / 2)
-      calc(var(--w) + var(--gap, 1.5rem) / 2 + 1px),
-    transparent calc(var(--w) + var(--gap, 1.5rem) / 2 + 1px)
-      calc(var(--w) + var(--gap, 1.5rem))
+    transparent var(--w) calc(var(--w) + var(--gap, 1.5rem))
   );
 }
 
@@ -1035,8 +1064,8 @@ pre {
    Set the base style on the container (e.g. .ts-p1); rows are separated by two blank lines.
    Add .guides to show the grid. */
 .plate--layout {
-  /* top/bottom: one line of the base style; sides: grid.margin, else half a gutter */
-  padding: var(--margin-y, 1.5rem) var(--margin-x, calc(var(--gap, 1.5rem) / 2));
+  /* grid.margin on all sides */
+  padding: var(--margin, 1.5rem);
 }
 .type-layout {
   --cols: var(--layout-cols, 3);

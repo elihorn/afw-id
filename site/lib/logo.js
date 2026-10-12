@@ -6,6 +6,7 @@
 //
 //   {% logotypeLayout %}      'a' / 'friendly' / 'wave' stacked with spacing guides
 //   {% logomarkLayout %}      mark aligned to the edge of the page
+//   {% logoOrigin %}          the 'e' beside the speaker it comes from, with geometry guides
 //   Both read the SVGs from ./blue by default (folder="..." to change).
 
 import fs from "node:fs";
@@ -117,6 +118,47 @@ export function logomarkLayout(...args) {
   return (
     `<div class="plate logo-layout logo-layout--mark">` +
     svg(file, [9, 9, 1386, 1350], `style="width:${size}%"`) +
+    `</div>`
+  );
+}
+
+// The 'e' of the logotype beside the speaker it is drawn from, with guides.
+// The 'e' is the exact outline from Logo-Type_Friendly.svg (x 1224-1620, y 288-864):
+// body 396 x 576, counter r117 centred across the width and in the top 396 square, notch 108
+// high from the right
+// edge ending in an r54 half circle. The speaker is a simplified redraw at the same height,
+// with the woofer and port placed on the same centre lines as the counter and the notch.
+const E_PATH =
+  "M1224,864h396v-90h-108c-29.82,0-54-24.18-54-54s24.18-54,54-54h108v-378h-396v576Z" +
+  "M1422,369c64.62,0,117,52.38,117,117s-52.38,117-117,117-117-52.38-117-117,52.38-117,117-117Z";
+
+export function logoOrigin() {
+  const H = 576;
+  const sp = { w: 480, woofer: { cx: 240, cy: 198, r: 156 }, port: { cx: 357, cy: 432, r: 54 } };
+  const ex = 720; // left edge of the 'e'
+  const e = { w: 396, counter: { cx: ex + 198, cy: 198 }, notch: { cx: ex + 288, cy: 432, r: 54 } };
+  const W = ex + e.w;
+  const far = 5000; // guides run to the plate edges (the plate clips them)
+  const g = (d) => `<path class="lo-guide" d="${d}"/>`;
+  const ink = 'fill="currentColor"';
+  const ground = 'style="fill:var(--plate-bg)"';
+  const ring = (r) => `<circle cx="${sp.woofer.cx}" cy="${sp.woofer.cy}" r="${r}" fill="none" stroke="currentColor" stroke-width="3"/>`;
+  const speaker =
+    `<rect x="0" y="0" width="${sp.w}" height="${H}" ${ink}/>` +
+    `<circle cx="${sp.woofer.cx}" cy="${sp.woofer.cy}" r="${sp.woofer.r}" ${ground}/>` +
+    ring(sp.woofer.r * 0.88) + ring(sp.woofer.r * 0.79) + ring(sp.woofer.r * 0.4) +
+    `<circle cx="${sp.port.cx}" cy="${sp.port.cy}" r="${sp.port.r}" ${ground}/>`;
+  const letter = `<path d="${E_PATH}" transform="translate(${ex - 1224} -288)" ${ink} fill-rule="evenodd"/>`;
+  const guides =
+    g(`M${-far} ${sp.woofer.cy}H${far}`) + // woofer centre = counter centre
+    g(`M${-far} ${sp.port.cy}H${far}`) + // port centre = notch centre
+    g(`M${sp.woofer.cx} ${-far}V${far}`) + // woofer on the speaker's centre axis
+    g(`M${e.counter.cx} ${-far}V${far}`) + // counter on the letter's centre axis
+    `<circle class="lo-guide" cx="${e.notch.cx}" cy="${e.notch.cy}" r="${e.notch.r}"/>` + // the port circle inside the notch
+    g(`M${sp.w + 60} ${H / 2}H${ex - 60}M${ex - 84} ${H / 2 - 24}l24 24-24 24`); // arrow
+  return (
+    `<div class="plate logo-layout logo-layout--origin">` +
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="The speaker cabinet, woofer and port, and the letter e drawn from them">${speaker}${letter}${guides}</svg>` +
     `</div>`
   );
 }

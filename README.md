@@ -6,9 +6,9 @@ The AFW brand guide as a static site. Content is plain folders and markdown; the
 
 ```sh
 npm install
-npm run dev      # preview at http://localhost:8080 with live reload
+npm run dev      # preview at http://localhost:8080 with live reload (older versions built at startup)
 npm run build    # writes the site, with every version, to _site/
-npm run versions # builds older versions (branches v1, v2...) so the dropdown works in dev
+npm run versions # rebuilds older versions (branches v1, v2...) while dev is running
 ```
 
 The current brand lives on `main`. Earlier major versions live on branches named `v1`, `v2`, ...; edit one by committing on its branch.
@@ -48,6 +48,7 @@ Put each on its own line, with a blank line before and after. Paths are relative
 
 {% download "_files/AFW_Logos.zip", "Logo package" %}
 {% download "https://drive.google.com/...", "Print masters" %}
+{% download "https://afriendlywave.com/" %}              link pill labelled afriendlywave.com
 ```
 
 Galleries sort by file name, so prefix files with numbers to control order. They accept jpg, png, gif, webp, avif, svg, and mp4/webm (videos autoplay muted).
@@ -88,7 +89,7 @@ Font names, weights and links always come from brand.json; don't type them into 
 
 Every type style is also a CSS class (`.ts-h1`, `.ts-p1`, ...), and every colour a variable (`var(--brand-blue)`), for one-off layouts written in HTML. Line height (`type.leading`, e.g. 1.2) and paragraph space (`type.paragraphSpacing`, e.g. `0.5lh` = half the line height) are brand-wide and inherited by every style in em (a style can add `tracking` in 1/1000 em, as in Illustrator), as `var(--brand-leading)` and `var(--brand-para)`. Sample text and examples belong in the content pages, not in brand.json. Sizes are in `type.sizeUnit` on `type.sizeReference` (v2: px on 1080 x 1440). They are shown on screen at `--type-scale` times their size: 1.6 for pt, 1.25 for px (set in `site/lib/brand.js`). `type.leading` may be a fraction such as `"4/3"`.
 
-Layouts on the column and baseline grid use `{% typeLayout %}` around rows of HTML set with the style classes. The base style (default p1) sets size and leading; `grid.margin` and `grid.gutter` in brand.json set the margins and gutters; the specs beside it are generated. In a row, `span-2` spans two columns:
+Layouts on the column and baseline grid use `{% typeLayout %}` around rows of HTML set with the style classes. The base style (`grid.base`, default p1) sets size and leading. `grid.margin` and `grid.gutter` in brand.json set the margins (all sides) and gutters relative to it: `"1em"` = one type size, `"1.5lh"` = 1.5 lines, or a plain number. The specs beside it are generated. In a row, `span-2` spans two columns:
 
 ```html
 {% typeLayout "p1" %}

@@ -56,6 +56,15 @@ function paraCss(t, leadingVar = "--brand-leading") {
 }
 
 // Paragraph space in em of the style's own size
+// A grid length relative to a style: "2/3lh" = two thirds of a line, "1.5lh", "2em" = 2 type
+// sizes, or a plain number in the size unit
+function gridLength(v, size, row) {
+  const str = String(v).trim();
+  if (str.endsWith("lh")) return ratio(str.slice(0, -2), 0) * row;
+  if (str.endsWith("em")) return ratio(str.slice(0, -2), 0) * size;
+  return ratio(str, 0);
+}
+
 // A leading may be a number (1.2) or a fraction string ("4/3")
 export function ratio(v, fallback = 1.2) {
   if (v == null || v === "") return fallback;
@@ -94,6 +103,11 @@ function luminance(hex) {
   const [r, g, bl] = [0, 2, 4].map((i) => parseInt(n.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
   return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
 }
+// The lightest colour in a palette: the light ground for plates and ink choices
+function lightest(colors) {
+  return colors.reduce((a, c) => (!a || luminance(c.hex) > luminance(a.hex) ? c : a), null);
+}
+
 export function contrast(a, b) {
   const [l1, l2] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (l1 + 0.05) / (l2 + 0.05);
@@ -116,10 +130,14 @@ export function brandCss() {
   }
 
   const vars = [];
-  for (const c of b.color?.colors || []) vars.push(`--brand-${c.name}:${c.hex}`);
+  const colors = b.color?.colors || [];
+  for (const c of colors) vars.push(`--brand-${c.name}:${c.hex}`);
+  // The light ground (White in 2.0, Neutral in 1.0): the lightest colour, for plates
+  const ground = lightest(colors);
+  if (ground) vars.push(`--brand-ground:var(--brand-${ground.name})`);
   for (const [k, v] of Object.entries(t.families || {})) vars.push(`--brand-font-${k}:${stack(v)}`);
   vars.push(`--brand-leading:${+leadingOf(t).toFixed(6)}`);
-  vars.push(`--type-scale:${SCREEN_SCALE[t.sizeUnit] || 1}`);
+  vars.push(`--screen-scale:${SCREEN_SCALE[t.sizeUnit] || 1}`, `--type-scale:var(--screen-scale)`);
   vars.push(`--brand-para:${paraCss(t)}`);
   vars.push(`--brand-radius:${b.shape?.radius ?? 0}px`);
   lines.push(`:root{${vars.join(";")}}`);
@@ -149,7 +167,7 @@ export function palette(...args) {
   const all = brand().color?.colors || [];
   const group = pos[0];
   const list = group ? all.filter((c) => c.group === group) : all;
-  const light = all[1];        // the light ground (neutral)
+  const light = lightest(all);
   const blank = "---";
 
   const plates = list.map((c) => {
@@ -177,14 +195,14 @@ export function palette(...args) {
 // --------------------------------------------------------------------------
 
 // One row per font in brand.json: name, licence and source link beside its character set.
-// Every font is shown at the same size, 1.5x the body (smallest) style, on the brand leading
-// (v2: 18/24px).
+// Every font is shown at the body (smallest) style size on the brand leading, enlarged on screen
+// by --example-scale like the other type examples.
 export function fontSpecimen() {
   const b = brand();
   const fonts = b.type?.fonts || [];
   const sizes = (b.type?.styles || []).map((s) => s.size).filter(Boolean);
   const body = sizes.length ? Math.min(...sizes) : 10;
-  const size = `calc(${+(body * 1.5).toFixed(3)}px * var(--type-scale, 1))`;
+  const size = `calc(${+body.toFixed(3)}px * var(--type-scale, 1))`;
   const rows = fonts
     .map((f) => {
       const name = fontName(f);
@@ -240,16 +258,16 @@ export function typeStyle(content, ...args) {
 }
 
 // A layout on the column and baseline grid. The content is .type-row HTML (see theme.css);
-// the base style sets size and leading, grid.margin and grid.gutter (in the type size unit,
-// on the same reference format) set the side margins and column gutters; top and bottom
-// margins are one line of the base style, so the text stays on the baseline grid. Specs beside it.
+// the base style (grid.base, default p1) sets size and leading; grid.margin and grid.gutter set
+// the margins (all four sides) and column gutters, relative to the base style. Specs beside it.
 export function typeLayout(content, ...args) {
   const { pos, opts } = split(args);
   const b = brand();
   const t = b.type || {};
   const g = b.grid || {};
-  const s = (t.styles || []).find((x) => x.name === (pos[0] || "p1"));
-  if (!s) return problem(`typeLayout: no style "${pos[0] || "p1"}" in brand/brand.json`);
+  const base = pos[0] || g.base || "p1";
+  const s = (t.styles || []).find((x) => x.name === base);
+  if (!s) return problem(`typeLayout: no style "${base}" in brand/brand.json`);
 
   const unit = t.sizeUnit || "px";
   const fmt = (v) => `${+v.toFixed(2)}${unit}`;
@@ -257,17 +275,29 @@ export function typeLayout(content, ...args) {
   const cols = Number(opts.cols || 3);
   const px = (v) => `calc(${v}px * var(--type-scale, 1))`;
   const vars = [`--layout-cols:${cols}`];
+  // grid.margin and grid.gutter are lengths relative to the base style: "1.5lh" (lines),
+  // "2em" (type sizes) or a plain number in the size unit. Without tokens: one type size each.
   const row = s.size * leading;
-  vars.push(`--margin-y:${px(row)}`);
-  if (g.margin != null) vars.push(`--margin-x:${px(g.margin)}`);
-  if (g.gutter != null) vars.push(`--gap:${px(g.gutter)}`);
+  const margin = gridLength(g.margin ?? "1em", s.size, row);
+  const gutter = gridLength(g.gutter ?? "1em", s.size, row);
+  vars.push(`--margin:${px(margin)}`, `--gap:${px(gutter)}`);
+  const rel = (v) => {
+    const str = typeof v === "string" ? v : "";
+    if (str.endsWith("lh")) return ` (${str.slice(0, -2)} × leading)`;
+    if (str.endsWith("em")) return str === "1em" ? " (= type size)" : ` (${str.slice(0, -2)} × type size)`;
+    return "";
+  };
+  const spacing =
+    g.margin == null && g.gutter == null
+      ? ""
+      : margin === gutter && String(g.margin) === String(g.gutter)
+        ? `${fmt(margin)} margins and gutters${rel(g.margin)}`
+        : [g.margin != null ? `${fmt(margin)} margins${rel(g.margin)}` : "", g.gutter != null ? `${fmt(gutter)} gutters${rel(g.gutter)}` : ""].filter(Boolean).join("<br>");
   const specs = [
     `<strong>Layout</strong>`,
     `${esc(s.label || s.name)} base, ${cols} columns`,
     `${fmt(s.size * leading)} leading<br>${fmt(s.size * paraEm(t, leading))} paragraph space`,
-    g.margin != null || g.gutter != null
-      ? [g.margin != null ? `${fmt(g.margin)} margins<br>${fmt(row)} top and bottom` : "", g.gutter != null ? `${fmt(g.gutter)} gutters` : ""].filter(Boolean).join("<br>")
-      : "",
+    spacing,
   ]
     .filter(Boolean)
     .map((x) => `<p>${x}</p>`)

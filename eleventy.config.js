@@ -5,7 +5,7 @@ import { buildTree, navHtml, trail, pager } from "./site/lib/nav.js";
 import { gallery, swatches, download } from "./site/lib/shortcodes.js";
 import { copyContentAssets } from "./site/lib/assets.js";
 import { brandCss, palette, fontSpecimen, typeStyle, typeLayout } from "./site/lib/brand.js";
-import { plates, logotypeLayout, logomarkLayout } from "./site/lib/logo.js";
+import { plates, logotypeLayout, logomarkLayout, logoOrigin } from "./site/lib/logo.js";
 import { columns, column } from "./site/lib/layout.js";
 import { CONTENT_DIR, BRAND_DIR, BRAND_FILE, PREFIX } from "./site/lib/source.js";
 import { versions } from "./site/lib/versions.js";
@@ -34,6 +34,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addShortcode("plates", plates);
   eleventyConfig.addShortcode("logotypeLayout", logotypeLayout);
   eleventyConfig.addShortcode("logomarkLayout", logomarkLayout);
+  eleventyConfig.addShortcode("logoOrigin", logoOrigin);
   eleventyConfig.addShortcode("palette", palette);
   eleventyConfig.addShortcode("fontSpecimen", fontSpecimen);
   eleventyConfig.addPairedShortcode("typeStyle", typeStyle);
@@ -42,6 +43,35 @@ export default function (eleventyConfig) {
   eleventyConfig.addPairedShortcode("column", column);
   // Brand colours, fonts and type styles as CSS (used in the layout)
   eleventyConfig.addShortcode("brandCss", brandCss);
+
+  // Not-found page for every version (hosts serve the nearest 404.html; without one,
+  // Cloudflare Pages would answer every unknown URL with the home page)
+  eleventyConfig.addTemplate("404.md", "That page does not exist in this version of the guide.\n\n[Back to the start](/)", {
+    title: "Page not found",
+    fixedPermalink: "/404.html",
+    eleventyExcludeFromCollections: true,
+  });
+
+  // Keep search engines out (only meaningful at the site root, so not in /v/N/ builds)
+  if (PREFIX === "/") {
+    eleventyConfig.addTemplate("robots.njk", "User-agent: *\nDisallow: /\n", {
+      layout: false,
+      fixedPermalink: "/robots.txt",
+      eleventyExcludeFromCollections: true,
+    });
+  }
+
+  // Links to other sites in markdown open in a new tab
+  eleventyConfig.amendLibrary("md", (md) => {
+    const fallback = md.renderer.rules.link_open || ((tokens, i, options, env, self) => self.renderToken(tokens, i, options));
+    md.renderer.rules.link_open = (tokens, i, options, env, self) => {
+      if (/^https?:\/\//.test(tokens[i].attrGet("href") || "")) {
+        tokens[i].attrSet("target", "_blank");
+        tokens[i].attrSet("rel", "noopener");
+      }
+      return fallback(tokens, i, options, env, self);
+    };
+  });
 
   // ids on headings (used for in-page links in the sidebar)
   eleventyConfig.addPlugin(IdAttributePlugin);
