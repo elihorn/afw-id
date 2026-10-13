@@ -42,7 +42,7 @@ const byName = (a, b) =>
 const caption = (file) => file.replace(/\.[^.]+$/, "").replace(/[_]+/g, " ");
 const problem = (msg) => `<p class="component-error">${esc(msg)}</p>`;
 
-function fileSize(bytes) {
+export function fileSize(bytes) {
   if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }

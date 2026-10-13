@@ -80,7 +80,8 @@ export default function (eleventyConfig) {
 
   // Site CSS, JS, fonts
   eleventyConfig.addPassthroughCopy({ "site/assets": "assets" });
-  eleventyConfig.addPassthroughCopy({ [rel(path.join(BRAND_DIR, "fonts"))]: "brand/fonts" });
+  // Font files (web, and desktop TTFs for the download links); build plans stay out of the site
+  eleventyConfig.addPassthroughCopy({ [rel(path.join(BRAND_DIR, "fonts"))]: "brand/fonts" }, { filter: ["**/*.woff2", "**/*.woff", "**/*.otf", "**/*.ttf"] });
 
   // Images and files that live next to the pages
   eleventyConfig.on("eleventy.before", ({ directories, dir }) => {

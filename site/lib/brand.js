@@ -16,7 +16,8 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { BRAND_FILE as BRAND, PREFIX } from "./source.js";
+import { BRAND_FILE as BRAND, BRAND_DIR, PREFIX } from "./source.js";
+import { fileSize } from "./shortcodes.js";
 
 export const brand = () => JSON.parse(fs.readFileSync(BRAND, "utf8"));
 
@@ -86,16 +87,24 @@ function paraEm(t, leading = leadingOf(t)) {
 
 // Display name of a font: "name" if given, else family + weight name ("Iosevka Aile Heavy")
 const WEIGHTS = { 100: "Thin", 200: "ExtraLight", 300: "Light", 400: "Regular", 500: "Medium", 600: "SemiBold", 700: "Bold", 800: "ExtraBold", 900: "Heavy" };
+// Widths ("stretch", CSS font-stretch keywords) and their names
+const STRETCH = { "ultra-condensed": "Ultra-Condensed", "extra-condensed": "Extra-Condensed", condensed: "Condensed", "semi-condensed": "Semi-Condensed", "semi-expanded": "Semi-Extended", expanded: "Extended", "extra-expanded": "Extra-Extended", "ultra-expanded": "Ultra-Extended" };
+
 export function fontName(f) {
   if (f.name) return f.name;
+  const width = STRETCH[f.stretch] ? ` ${STRETCH[f.stretch]}` : "";
   const italic = f.style === "italic" ? " Italic" : "";
-  return `${f.family || ""} ${WEIGHTS[f.weight || 400] || f.weight}${italic}`.trim();
+  return `${f.family || ""}${width} ${WEIGHTS[f.weight || 400] || f.weight}${italic}`.trim();
 }
 
+// The font file a style uses: first family in its stack, with the style's weight, width and slope
 function fontOf(b, style) {
+  const fonts = b.type?.fonts || [];
   const fam = b.type?.families?.[style.family] || [];
   const first = (Array.isArray(fam) ? fam[0] : String(fam).split(",")[0]).replace(/["']/g, "").trim();
-  return (b.type?.fonts || []).find((f) => f.family === first) || (b.type?.fonts || [])[0] || {};
+  const same = fonts.filter((f) => f.family === first);
+  const exact = same.find((f) => (f.weight || 400) === (style.weight || 400) && (f.stretch || "normal") === (style.stretch || "normal") && (f.style || "normal") === (style.style || "normal"));
+  return exact || same[0] || fonts[0] || {};
 }
 
 function luminance(hex) {
@@ -125,7 +134,7 @@ export function brandCss() {
   for (const f of t.fonts || []) {
     if (!f.file) continue;
     lines.push(
-      `@font-face{font-family:"${f.family}";src:url("${PREFIX}brand/${f.file}");font-weight:${f.weight || 400};font-style:${f.style || "normal"};font-display:swap}`
+      `@font-face{font-family:"${f.family}";src:url("${PREFIX}brand/${f.file}");font-weight:${f.weight || 400};font-stretch:${f.stretch || "normal"};font-style:${f.style || "normal"};font-display:swap}`
     );
   }
 
@@ -147,7 +156,7 @@ export function brandCss() {
     lines.push(
       `.ts-${s.name}{` +
         `--ts-ascent:${m.ascent};--ts-descent:${m.descent};` +
-        `font-family:var(--brand-font-${s.family});font-weight:${s.weight || 400};font-style:${s.style || "normal"};` +
+        `font-family:var(--brand-font-${s.family});font-weight:${s.weight || 400};font-stretch:${s.stretch || "normal"};font-style:${s.style || "normal"};` +
         `font-size:calc(${s.size}px * var(--type-scale, 1));` +
         `--ts-leading:${s.leading != null ? +ratio(s.leading).toFixed(6) : "var(--brand-leading)"};--ts-para:${paraCss(t, "--ts-leading")};` +
         `line-height:var(--ts-leading);` +
@@ -194,7 +203,8 @@ export function palette(...args) {
 // Type
 // --------------------------------------------------------------------------
 
-// One row per font in brand.json: name, licence and source link beside its character set.
+// One row per font in brand.json: name and download pills (web and desktop files) beside its
+// character set. Licence and source belong in the page text.
 // Every font is shown at the body (smallest) style size on the brand leading, enlarged on screen
 // by --example-scale like the other type examples.
 export function fontSpecimen() {
@@ -206,11 +216,17 @@ export function fontSpecimen() {
   const rows = fonts
     .map((f) => {
       const name = fontName(f);
-      const set = `class="plate plate--type" style="font-family:${esc(stack([f.family]))};font-weight:${f.weight || 400};font-style:${f.style || "normal"};font-size:${size}"`;
-      const src = f.source ? `<p><a href="${esc(f.source)}" target="_blank" rel="noopener">Source</a></p>` : "";
+      const set = `class="plate plate--type" style="font-family:${esc(stack([f.family]))};font-weight:${f.weight || 400};font-stretch:${f.stretch || "normal"};font-style:${f.style || "normal"};font-size:${size}"`;
+      // Download pills: the web font ("file") and the desktop font ("desktop"), when the file exists
+      const pill = (rel) => {
+        const file = rel && path.join(BRAND_DIR, rel);
+        if (!file || !fs.existsSync(file)) return "";
+        return `<a class="download" href="/brand/${esc(rel)}" download><span class="download__label">${path.extname(rel).slice(1).toUpperCase()}</span><span class="download__meta">${fileSize(fs.statSync(file).size)}</span></a>`;
+      };
+      const downloads = pill(f.file) + pill(f.desktop);
       return (
         `<figure class="plate-row specimen">` +
-        `<figcaption><p>${esc(name)}</p>${f.licence ? `<p>${esc(f.licence)}</p>` : ""}${src}</figcaption>` +
+        `<figcaption><p>${esc(name)}</p>${downloads ? `<p class="specimen__downloads">${downloads}</p>` : ""}</figcaption>` +
         `<div ${set}>` +
         `<p class="specimen__name">${esc(name)}</p>` +
         `<p class="specimen__glyphs">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<br>0123456789 &amp; @ # $ % ( ) – , . : ; ! ? ’ “ ”</p>` +
@@ -281,28 +297,27 @@ export function typeLayout(content, ...args) {
   const margin = gridLength(g.margin ?? "1em", s.size, row);
   const gutter = gridLength(g.gutter ?? "1em", s.size, row);
   vars.push(`--margin:${px(margin)}`, `--gap:${px(gutter)}`);
-  const rel = (v) => {
-    const str = typeof v === "string" ? v : "";
-    if (str.endsWith("lh")) return ` (${str.slice(0, -2)} × leading)`;
-    if (str.endsWith("em")) return str === "1em" ? " (= type size)" : ` (${str.slice(0, -2)} × type size)`;
-    return "";
-  };
   const spacing =
     g.margin == null && g.gutter == null
       ? ""
-      : margin === gutter && String(g.margin) === String(g.gutter)
-        ? `${fmt(margin)} margins and gutters${rel(g.margin)}`
-        : [g.margin != null ? `${fmt(margin)} margins${rel(g.margin)}` : "", g.gutter != null ? `${fmt(gutter)} gutters${rel(g.gutter)}` : ""].filter(Boolean).join("<br>");
-  const specs = [
-    `<strong>Layout</strong>`,
-    `${esc(s.label || s.name)} base, ${cols} columns`,
-    `${fmt(s.size * leading)} leading<br>${fmt(s.size * paraEm(t, leading))} paragraph space`,
-    spacing,
-  ]
+      : margin === gutter
+        ? `${fmt(margin)} margins and gutters`
+        : [g.margin != null ? `${fmt(margin)} margins` : "", g.gutter != null ? `${fmt(gutter)} gutters` : ""].filter(Boolean).join("<br>");
+  // styles="display2: Headline, p1: text, h1: headings" -> "Display 2 Headline", "P1 text", ...
+  // (labels from brand.json); without it, just the base style
+  const used = String(opts.styles || `${s.name}: text`)
+    .split(",")
+    .map((x) => x.split(":").map((y) => y.trim()))
+    .filter(([name]) => name)
+    .map(([name, role]) => {
+      const st = (t.styles || []).find((x) => x.name === name);
+      return `${esc(st?.label || name)}${role ? ` ${esc(role)}` : ""}`;
+    });
+  const specs = [used.join("<br>"), `${fmt(s.size)} type size`, spacing]
     .filter(Boolean)
     .map((x) => `<p>${x}</p>`)
     .join("");
-  const guides = opts.guides === false ? "" : " guides";
+  const guides = (opts.guides === false ? "" : " guides") + (opts.baseline === false ? " no-baseline" : "");
   return (
     `<figure class="plate-row type-layout-row" style="${vars.join(";")}">` +
     `<figcaption>${specs}</figcaption>` +

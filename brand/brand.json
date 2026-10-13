@@ -74,8 +74,9 @@
   "type": {
     "fonts": [
       {
-        "family": "Iosevka",
-        "file": "fonts/Iosevka-Regular.woff2",
+        "family": "AFW Iosevka",
+        "file": "fonts/mono/AFW-Iosevka-Regular.woff2",
+        "desktop": "fonts/mono/AFW-Iosevka-Regular.ttf",
         "weight": 400,
         "style": "normal",
         "source": "https://typeof.net/Iosevka/",
@@ -88,9 +89,41 @@
         }
       },
       {
-        "family": "Iosevka Aile",
-        "file": "fonts/IosevkaAile-Heavy.woff2",
+        "family": "AFW Iosevka Aile",
+        "file": "fonts/aile/AFW-IosevkaAile-Heavy.woff2",
+        "desktop": "fonts/aile/AFW-IosevkaAile-Heavy.ttf",
         "weight": 900,
+        "style": "normal",
+        "source": "https://typeof.net/Iosevka/",
+        "licence": "SIL Open Font License 1.1",
+        "metrics": {
+          "ascent": 0.965,
+          "descent": 0.285,
+          "capHeight": 0.735,
+          "xHeight": 0.52
+        }
+      },
+      {
+        "family": "AFW Iosevka Aile",
+        "file": "fonts/aile/AFW-IosevkaAile-ExtendedHeavy.woff2",
+        "desktop": "fonts/aile/AFW-IosevkaAile-ExtendedHeavy.ttf",
+        "weight": 900,
+        "stretch": "expanded",
+        "style": "normal",
+        "source": "https://typeof.net/Iosevka/",
+        "licence": "SIL Open Font License 1.1",
+        "metrics": {
+          "ascent": 0.965,
+          "descent": 0.285,
+          "capHeight": 0.735,
+          "xHeight": 0.52
+        }
+      },
+      {
+        "family": "AFW Iosevka Aile",
+        "file": "fonts/aile/AFW-IosevkaAile-Regular.woff2",
+        "desktop": "fonts/aile/AFW-IosevkaAile-Regular.ttf",
+        "weight": 400,
         "style": "normal",
         "source": "https://typeof.net/Iosevka/",
         "licence": "SIL Open Font License 1.1",
@@ -103,8 +136,9 @@
       }
     ],
     "families": {
-      "mono": ["Iosevka", "ui-monospace", "monospace"],
-      "display": ["Iosevka Aile", "Iosevka", "sans-serif"]
+      "mono": ["AFW Iosevka", "ui-monospace", "monospace"],
+      "display": ["AFW Iosevka Aile", "AFW Iosevka", "sans-serif"],
+      "sans": ["AFW Iosevka Aile", "sans-serif"]
     },
     "leading": "4/3",
     "paragraphSpacing": "1lh",
@@ -122,9 +156,20 @@
         "tracking": -35
       },
       {
+        "name": "display2",
+        "label": "Display 2",
+        "family": "display",
+        "weight": 900,
+        "stretch": "expanded",
+        "size": 64,
+        "leading": 1.0,
+        "case": "upper",
+        "tracking": -35
+      },
+      {
         "name": "h1",
         "label": "H1",
-        "family": "mono",
+        "family": "sans",
         "weight": 400,
         "size": 12,
         "case": "upper"
@@ -133,6 +178,14 @@
         "name": "p1",
         "label": "P1",
         "family": "mono",
+        "weight": 400,
+        "size": 12,
+        "case": "sentence"
+      },
+      {
+        "name": "p2",
+        "label": "P2",
+        "family": "sans",
         "weight": 400,
         "size": 12,
         "case": "sentence"
