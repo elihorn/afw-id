@@ -12,7 +12,7 @@ The brand fonts are custom builds of Iosevka, made with Iosevka's own build opti
 
 Most type should be set in these core styles. Sizes are for a 1080 × 1440 px canvas; scale everything proportionally for other formats. Line height is 4/3 (133%) of the type size and paragraph space is one full line, so text stays on the baseline grid.
 
-Display styles are the exception with a 1/1 (100%) line height.
+Display styles are the exception, with a 1/1 (100%) line height.
 
 ---
 
@@ -40,7 +40,7 @@ CASSETTE CAFÉ
 ---
 
 {% typeStyle "p1" %}
-We're creating a listening space on Salt Spring Island. A place where music matters, where we listen and connect. Local enthusiasts share their music, visiting and community DJs play records after dark, with full album deep listening sessions on each Sunday.
+We're creating a listening space on Salt Spring Island. A place where music matters, where we listen and connect. Local enthusiasts share their music, visiting and community DJs play records after dark, with full album deep listening sessions each Sunday.
 
 Quality sound. Quality music.
 {% endtypeStyle %}
@@ -48,7 +48,7 @@ Quality sound. Quality music.
 ---
 
 {% typeStyle "p2" %}
-We're creating a listening space on Salt Spring Island. A place where music matters, where we listen and connect. Local enthusiasts share their music, visiting and community DJs play records after dark, with full album deep listening sessions on each Sunday.
+We're creating a listening space on Salt Spring Island. A place where music matters, where we listen and connect. Local enthusiasts share their music, visiting and community DJs play records after dark, with full album deep listening sessions each Sunday.
 
 Quality sound. Quality music.
 {% endtypeStyle %}
@@ -69,7 +69,7 @@ Display type should be scaled to the width of the layout.
 
 <div class="type-row">
 <p class="ts-h1">A Friendly Wave</p>
-<p class="span-2">A Friendly Wave is a volunteer-run music space and radio initiative based on Salt Spring Island, BC. In collaboration with the Cassette Cafe, we host listening sessions, parties, and talks centered around music appreciation.</p>
+<p class="span-2">A Friendly Wave is a volunteer-run music space and radio initiative based on Salt Spring Island, BC. In collaboration with the Cassette Café, we host listening sessions, parties, and talks centred on music appreciation.</p>
 </div>
 <div class="type-row">
 <p class="ts-h1">Season 1</p>

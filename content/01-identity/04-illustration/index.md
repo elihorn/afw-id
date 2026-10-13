@@ -4,9 +4,9 @@ The brand's mascot is Mister Listener, a dude born to listen, with a heart as bi
 
 {% gallery "character" %}
 
-## Hand Drawn Line
+## Hand-drawn line
 
-A thick single colour hand-drawn line style is used for some illustrations.
+A thick, single-colour, hand-drawn line style is used for some illustrations.
 
 {% gallery "line" %}
 

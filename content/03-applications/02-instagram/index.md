@@ -8,7 +8,7 @@
 
 {% specs "instagram-story" %}
 
-Stories are the one application in which type is centered rather than left-aligned to a grid.
+Stories are the one application in which type is centred rather than left-aligned to a grid.
 
 {% gallery "stories", cols=4 %}
 

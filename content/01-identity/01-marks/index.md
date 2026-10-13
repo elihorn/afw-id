@@ -11,6 +11,7 @@ The letterforms are drawn from A Friendly Wave's custom speakers. In the 'e', th
 <img src="blue/afw_20.jpg" alt="Two blue speaker cabinets in the workshop, each with a large woofer opening and a small port below">
 {% endcolumn %}
 {% column %}
+
 <div class="plate"><img src="blue/Logo-Origin.svg" alt="The speaker and the letter e drawn from it, with geometry guides"></div>
 {% endcolumn %}
 {% endcolumns %}
