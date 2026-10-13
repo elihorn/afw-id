@@ -7,7 +7,8 @@
     "build": "node scripts/build.js",
     "versions": "node scripts/build.js --versions-only",
     "clean": "rm -rf _site .versions",
-    "check": "eleventy --quiet --output=.check && rm -rf .check"
+    "check": "eleventy --quiet --output=.check && rm -rf .check",
+    "font": "node scripts/build-font.js"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.0"

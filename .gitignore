@@ -2,6 +2,7 @@ node_modules/
 _site/
 .check/
 .versions/
+.cache/
 .DS_Store
 
 # Masters stay in the Brand folder, never in this repo
