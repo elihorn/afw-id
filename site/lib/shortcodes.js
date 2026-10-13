@@ -149,3 +149,43 @@ export function download(...args) {
   const meta = `${ext} · ${fileSize(fs.statSync(file).size)}`;
   return `<a class="download" href="${assetUrl(relFromContent(file))}" download><span class="download__label">${esc(text || name)}</span><span class="download__meta">${esc(meta)}</span></a>`;
 }
+
+// Output formats from brand.json "output". Ratio is derived from the size.
+//   {% specs %}                    every format, with a Type column
+//   {% specs "instagram-post" %}   one or more formats, no Type column
+export function specs(...args) {
+  const { pos } = split(args);
+  let output;
+  try {
+    output = readBrand().output;
+  } catch (e) {
+    return problem(`specs: could not read brand/brand.json (${e.message})`);
+  }
+  if (!output?.formats) return problem("specs: no output formats in brand.json");
+  const names = pos.filter((p) => typeof p === "string" && p);
+  const missing = names.filter((n) => !output.formats.some((f) => f.name === n));
+  if (missing.length) return problem(`specs: unknown format "${missing.join('", "')}"`);
+  const list = names.length
+    ? names.map((n) => output.formats.find((f) => f.name === n))
+    : output.formats;
+
+  const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+  const head = ["Ratio", "Dimensions", "Resolution", "Colour space"];
+  if (!names.length) head.unshift("Type");
+  const rows = list.map((f) => {
+    const medium = output.media?.[f.medium] ?? {};
+    const d = gcd(f.width, f.height);
+    const cells = [
+      `${f.width / d}:${f.height / d}`,
+      `${f.width} x ${f.height} ${f.unit}`,
+      medium.resolution ? `${medium.resolution} ppi` : "",
+      medium.colorSpace ?? "",
+    ];
+    if (!names.length) cells.unshift(f.label || f.name);
+    return `<tr>${cells.map((c) => `<td>${esc(c)}</td>`).join("")}</tr>`;
+  });
+  return (
+    `<table class="specs"><thead><tr>${head.map((h) => `<th>${h}</th>`).join("")}</tr></thead>` +
+    `<tbody>${rows.join("")}</tbody></table>`
+  );
+}

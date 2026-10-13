@@ -46,8 +46,7 @@
         "hex": "#FF5E43",
         "rgb": [255, 94, 67],
         "cmyk": [0, 78, 77, 0],
-        "pms": null,
-        "role": "Seasonal colour for backgrounds and highlights"
+        "pms": null
       },
       {
         "name": "magenta",
@@ -56,8 +55,7 @@
         "hex": "#B34479",
         "rgb": [179, 68, 121],
         "cmyk": [33, 87, 32, 4],
-        "pms": null,
-        "role": "Seasonal colour for backgrounds and highlights"
+        "pms": null
       },
       {
         "name": "lime",
@@ -66,8 +64,7 @@
         "hex": "#E2FF78",
         "rgb": [226, 255, 120],
         "cmyk": [16, 0, 64, 0],
-        "pms": null,
-        "role": "Seasonal colour for backgrounds and highlights"
+        "pms": null
       }
     ]
   },
@@ -199,5 +196,18 @@
   },
   "shape": {
     "radius": 0
+  },
+  "output": {
+    "media": {
+      "screen": { "resolution": 72, "colorSpace": "RGB" },
+      "print": { "resolution": 300, "colorSpace": "CMYK" }
+    },
+    "formats": [
+      { "name": "instagram-post", "label": "Instagram post", "medium": "screen", "width": 1080, "height": 1440, "unit": "px" },
+      { "name": "instagram-story", "label": "Instagram story", "medium": "screen", "width": 1080, "height": 1920, "unit": "px" },
+      { "name": "eventbrite-banner", "label": "Eventbrite banner", "medium": "screen", "width": 2160, "height": 1080, "unit": "px" },
+      { "name": "mixcloud-thumbnail", "label": "Mixcloud thumbnail", "medium": "screen", "width": 1728, "height": 1728, "unit": "px" },
+      { "name": "poster", "label": "Poster", "medium": "print", "width": 11, "height": 17, "unit": "in" }
+    ]
   }
 }

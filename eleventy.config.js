@@ -2,7 +2,7 @@ import { IdAttributePlugin, HtmlBasePlugin } from "@11ty/eleventy";
 import fs from "node:fs";
 import path from "node:path";
 import { buildTree, navHtml, trail, pager } from "./site/lib/nav.js";
-import { gallery, swatches, download } from "./site/lib/shortcodes.js";
+import { gallery, swatches, download, specs } from "./site/lib/shortcodes.js";
 import { copyContentAssets } from "./site/lib/assets.js";
 import { brandCss, palette, fontSpecimen, typeStyle, typeLayout } from "./site/lib/brand.js";
 import { plates, logotypeLayout, logomarkLayout, logoOrigin } from "./site/lib/logo.js";
@@ -31,6 +31,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addShortcode("gallery", gallery);
   eleventyConfig.addShortcode("swatches", swatches);
   eleventyConfig.addShortcode("download", download);
+  eleventyConfig.addShortcode("specs", specs);
   eleventyConfig.addShortcode("plates", plates);
   eleventyConfig.addShortcode("logotypeLayout", logotypeLayout);
   eleventyConfig.addShortcode("logomarkLayout", logomarkLayout);

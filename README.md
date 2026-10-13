@@ -18,7 +18,7 @@ The current brand lives on `main`. Earlier major versions live on branches named
 
 ```
 content/          the guide: one folder or .md file per page
-brand/brand.json  core brand values only (colours, fonts, type styles, leading): portable, no manual content
+brand/brand.json  core brand values only (colours, fonts, type styles, leading, output formats): portable, no manual content
 site/             how the guide looks and works (layout, theme, components)
   assets/theme.css  fonts, colours, borders, sidebar width: edit the variables at the top
   _data/site.json   guide title, subtitle, version
@@ -81,12 +81,14 @@ Markdown, images, components...
 
 ```
 {% palette "primary" %}                              colour plates for a group (primary, secondary)
+{% specs %}                                          every output format, with a Type column
+{% specs "instagram-post" %}                         one format's ratio, size, resolution, colour space
 {% fontSpecimen %}                                   each brand font: name, licence, source link, characters
 {% typeStyle "h1" %}Sample text{% endtypeStyle %}          style with baseline guides and specs
 {% typeLayout "p1" %}rows{% endtypeLayout %}           rows on the column and baseline grid, with specs
 ```
 
-Font names, weights and links always come from brand.json; don't type them into pages.
+Font names, weights and links always come from brand.json; don't type them into pages. Output formats are `output.formats` (size and medium); `output.media` sets resolution and colour space per medium (screen, print). The ratio is derived from the size.
 
 Every type style is also a CSS class (`.ts-h1`, `.ts-p1`, ...), and every colour a variable (`var(--brand-blue)`), for one-off layouts written in HTML. Line height (`type.leading`, e.g. 1.2) and paragraph space (`type.paragraphSpacing`, e.g. `0.5lh` = half the line height) are brand-wide and inherited by every style in em (a style can add `tracking` in 1/1000 em, as in Illustrator), as `var(--brand-leading)` and `var(--brand-para)`. Sample text and examples belong in the content pages, not in brand.json. Sizes are in `type.sizeUnit` on `type.sizeReference` (v2: px on 1080 x 1440). They are shown on screen at `--type-scale` times their size: 1.6 for pt, 1.25 for px (set in `site/lib/brand.js`). `type.leading` may be a fraction such as `"4/3"`.
 
