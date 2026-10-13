@@ -9,6 +9,7 @@ npm install
 npm run dev      # preview at http://localhost:8080 with live reload (older versions built at startup)
 npm run build    # writes the site, with every version, to _site/
 npm run versions # rebuilds older versions (branches v1, v2...) while dev is running
+npm run font     # builds the custom Iosevka fonts from brand/fonts/private-build-plans_*.toml (slow; commit the result)
 ```
 
 The current brand lives on `main`. Earlier major versions live on branches named `v1`, `v2`, ...; edit one by committing on its branch.
@@ -100,7 +101,7 @@ Layouts on the column and baseline grid use `{% typeLayout %}` around rows of HT
 {% endtypeLayout %}
 ```
 
-Options: `cols=3` (default), `guides=false` to hide the grid.
+Options: `styles="display2: Headline, p1: text, h1: headings"` (listed in the specs with their labels from brand.json), `cols=3` (default), `baseline=false` to hide the baseline lines (column guides stay), `guides=false` to hide all guides.
 
 ## Assets
 
