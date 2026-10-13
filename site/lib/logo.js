@@ -3,6 +3,7 @@
 //   {% plates "blue" %}                                   every image in ./blue, one plate each, stacked
 //   {% plates "blue", only="Logo-Type_01.svg, Logo-Mark_AFW.svg", labels="Logo type, Logo mark" %}
 //   {% plates "blue", bg="neutral", ratio="2/1" %}        plate colour (token name) and proportions
+//   {% plates "blue", pad="0" %}                          padding around the image (CSS value)
 //
 //   {% logotypeLayout %}      'a' / 'friendly' / 'wave' stacked with spacing guides
 //   {% logomarkLayout %}      mark aligned to the edge of the page
@@ -60,7 +61,8 @@ export function plates(...args) {
   const labels = list(opts.labels);
   const bg = opts.bg ? `background:var(--brand-${esc(opts.bg)}, ${esc(opts.bg)});` : "";
   const ratio = opts.ratio ? `aspect-ratio:${esc(opts.ratio)};` : "";
-  const style = bg || ratio ? ` style="${bg}${ratio}"` : "";
+  const pad = opts.pad != null ? `padding:${esc(opts.pad)};` : "";
+  const style = bg || ratio || pad ? ` style="${bg}${ratio}${pad}"` : "";
 
   const items = files.map((f, i) => {
     const url = assetUrl(relFromContent(path.join(dir, f)));

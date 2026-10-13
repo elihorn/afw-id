@@ -17,7 +17,7 @@ The letterforms are drawn from A Friendly Wave's custom speakers. In the 'e', th
 
 ## Logo type
 
-{% plates "blue", only="Logo-Type_01.svg, Logo-Type_02.svg", labels="Logo type, Logo type stacked", bg="white" %}
+{% plates "blue", only="Logo-Type_01.svg, Logo-Type_02.svg", labels="Logo type, Logo type stacked", bg="white", pad="0" %}
 
 ## Logo mark
 
